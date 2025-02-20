@@ -1,0 +1,28 @@
+{
+    "name": "sth-visual",
+    "version": "0.0.1",
+    "source": "src/index.js",
+    "main": "dist/main.js",
+    "targets": {
+        "modern": {
+            "engines": {
+                "browsers": "last 2 versions"
+            }
+        },
+        "legacy": {
+            "engines": {
+                "browsers": "> 0.25%, last 2 versions, not dead, iOS >= 10"
+            }
+        }
+    },
+    "___browserslist": "> 0.25%, last 2 versions, not dead, iOS >= 10",
+    "scripts": {
+        "dev": "parcel demo/index.html --dist-dir=demo/dist",
+        "build": "parcel build"
+    },
+    "devDependencies": {
+        "parcel": "latest",
+        "postcss": "^8.5.3",
+        "postcss-preset-env": "^10.1.4"
+    }
+}
