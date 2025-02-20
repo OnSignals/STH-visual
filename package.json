@@ -1,21 +1,26 @@
 {
     "name": "sth-visual",
     "version": "0.0.1",
-    "source": "src/index.js",
-    "main": "dist/main.js",
+    "modern": "dist/sth-visual.modern.min.js",
+    "legacy": "dist/sth-visual.legacy.min.js",
     "targets": {
         "modern": {
+            "source": "src/index.js",
+            "distDir": "dist",
+            "outputFormat": "global",
             "engines": {
                 "browsers": "last 2 versions"
             }
         },
         "legacy": {
+            "source": "src/index.js",
+            "distDir": "dist",
+            "outputFormat": "global",
             "engines": {
-                "browsers": "> 0.25%, last 2 versions, not dead, iOS >= 10"
+                "browsers": "> 0.25%, last 2 versions, not dead, IE 11"
             }
         }
     },
-    "___browserslist": "> 0.25%, last 2 versions, not dead, iOS >= 10",
     "scripts": {
         "dev": "parcel demo/index.html --dist-dir=demo/dist",
         "build": "parcel build"
@@ -24,5 +29,12 @@
         "parcel": "latest",
         "postcss": "^8.5.3",
         "postcss-preset-env": "^10.1.4"
+    },
+    "dependencies": {
+        "@juggle/resize-observer": "^3.4.0",
+        "@superstructure.net/c": "^1.1.1",
+        "@superstructure.net/s": "^0.0.7",
+        "@superstructure.net/utils": "^0.0.18",
+        "three": "^0.173.0"
     }
 }

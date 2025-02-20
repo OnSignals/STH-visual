@@ -1,17 +1,42 @@
-const { aaa } = require('./import');
+import { Instance } from './Instance.js';
+
+/**
+ * STH Visual
+ *
+ */
 
 console.log('index.js');
 
-const a = {
-    a: 0,
-    b: 1,
-};
+class STHVisual {
+    constructor(options = {}) {
+        const defaults = {
+            selectorInstance: '[data-STHVisual-role~="instance"]',
+        };
 
-const b = () => {
-    console.log('b()');
-};
+        this.options = { ...defaults, ...options };
 
-console.log(a?.b);
+        this.instances = [];
 
-b();
-aaa();
+        this.init();
+    }
+
+    init() {
+        if (this.instances.length) this.destroy();
+
+        const instanceElements = document.querySelectorAll(this.options.selectorInstance);
+        if (!instanceElements?.length) return;
+
+        instanceElements.forEach((instanceElement) => {
+            const instance = new Instance(instanceElement);
+            this.instances.push(instance);
+        });
+    }
+
+    destroy() {
+        if (this.instances) this.instances.forEach((instance) => instance.destroy());
+
+        this.instances = [];
+    }
+}
+
+window.STHVisual = new STHVisual({});

@@ -1,0 +1,15 @@
+[data-STHVisual-role='instance'] {
+    position: relative;
+}
+
+[data-STHVisual-role='canvas'] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}

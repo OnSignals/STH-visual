@@ -1,0 +1,11 @@
+.Posts {
+    min-height: 500vh;
+}
+
+.Post {
+    width: 50vw;
+    height: 50vh;
+    margin: 1rem;
+
+    border: 1px solid red;
+}

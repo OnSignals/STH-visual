@@ -11,4 +11,15 @@ html {
 body h1 {
   margin: 0;
 }
+
+.Posts {
+  min-height: 500vh;
+}
+
+.Post {
+  border: 1px solid red;
+  width: 50vw;
+  height: 50vh;
+  margin: 1rem;
+}
 /*# sourceMappingURL=index.d2094bd7.css.map */
