@@ -12,29 +12,40 @@ class VideoElement {
     }
 
     async build() {
-        this.url = await resolveRedirectedUrl(this.url);
+        return new Promise(async (resolve) => {
+            this.url = await resolveRedirectedUrl(this.url);
 
-        this.videoElement = Object.assign(document.createElement('video'), {
-            crossOrigin: 'anonymous',
-            loop: true,
-            muted: true,
-            playsInline: true,
-            ...this.videoAttributes,
+            this.videoElement = Object.assign(document.createElement('video'), {
+                crossOrigin: 'anonymous',
+                loop: true,
+                muted: true,
+                playsInline: true,
+                ...this.videoAttributes,
+            });
+
+            this.videoElement.addEventListener('canplay', () => {
+                this.videoElement
+                    .play()
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.error(error);
+
+                        resolve();
+                    });
+            });
+
+            this.videoElement.src = this.url;
         });
-
-        this.videoElement.addEventListener('canplay', () => {
-            this.videoElement
-                .play()
-                .then(() => {})
-                .catch((error) => {
-                    console.error(error);
-                });
-        });
-
-        this.videoElement.src = this.url;
     }
 
     unbuild() {
+        if (!this.videoElement) return;
+
+        this.videoElement.src = null;
+        this.videoElement.load();
+
         this.videoElement.remove();
         this.videoElement = null;
     }

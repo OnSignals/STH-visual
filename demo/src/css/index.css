@@ -1,2 +1,6 @@
 @import 'document';
 @import 'posts';
+
+#three-perf-ui {
+    position: absolute !important;
+}

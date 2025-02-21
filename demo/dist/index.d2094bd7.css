@@ -17,9 +17,23 @@ body h1 {
 }
 
 .Post {
+  background-image: linear-gradient(#fff 0%, #666 100%);
   border: 1px solid red;
   width: 50vw;
   height: 50vh;
   margin: 1rem;
+  position: relative;
+}
+
+.Post-ui {
+  z-index: 20;
+  font-size: .8rem;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+#three-perf-ui {
+  position: absolute !important;
 }
 /*# sourceMappingURL=index.d2094bd7.css.map */

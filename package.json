@@ -28,13 +28,15 @@
     "devDependencies": {
         "parcel": "latest",
         "postcss": "^8.5.3",
-        "postcss-preset-env": "^10.1.4"
+        "postcss-preset-env": "^10.1.4",
+        "process": "^0.11.10"
     },
     "dependencies": {
         "@juggle/resize-observer": "^3.4.0",
         "@superstructure.net/c": "^1.1.1",
         "@superstructure.net/s": "^0.0.7",
         "@superstructure.net/utils": "^0.0.18",
-        "three": "^0.173.0"
+        "three": "^0.173.0",
+        "three-perf": "^1.0.10"
     }
 }

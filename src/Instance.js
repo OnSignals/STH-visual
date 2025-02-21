@@ -1,5 +1,9 @@
 import { ResizeObserver } from '@juggle/resize-observer';
 import { Visual } from './Visual';
+import { s } from '@superstructure.net/s';
+import { wrap } from '@superstructure.net/utils';
+
+const API_ACTIONS = ['prev', 'next', 'go'];
 
 /**
  *
@@ -27,13 +31,16 @@ class Instance {
 
         this.visual = null;
 
+        this.currentIndex = new s(0);
+
         this.build();
     }
 
     build() {
         console.log('Instance.build()');
         // Visual
-        this.visual = new Visual(this.data);
+        this.visual = new Visual(this.data, this.currentIndex);
+        if (this.visual?.monitor) this.wrapperElement.appendChild(this.visual?.monitor.ui.wrapper);
 
         // DOM
         this.wrapperElement.appendChild(this.visual.getRendererElement());
@@ -70,12 +77,21 @@ class Instance {
         console.log('Instance.bindEvents()');
 
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseLeave = this.onMouseLeave.bind(this);
+        this.onClick = this.onClick.bind(this);
+        this.onApi = this.onApi.bind(this);
 
         this.wrapperElement.addEventListener('mousemove', this.onMouseMove);
+        this.wrapperElement.addEventListener('mouseleave', this.onMouseLeave);
+        this.wrapperElement.addEventListener('click', this.onClick);
+        this.wrapperElement.addEventListener('STHVisual/api', this.onApi);
     }
 
     unbindEvents() {
         this.wrapperElement.removeEventListener('mousemove', this.onMouseMove);
+        this.wrapperElement.removeEventListener('mousemove', this.onMouseLeave);
+        this.wrapperElement.removeEventListener('click', this.onClick);
+        this.wrapperElement.removeEventListener('STHVisual/api', this.onApi);
     }
 
     observeResize() {
@@ -118,6 +134,12 @@ class Instance {
         if (this.visual) this.visual.resize(this.dimensions);
     }
 
+    go(index = 0) {
+        if (!this.data.items.length) return;
+
+        this.currentIndex.set(wrap(index, this.data.items.length));
+    }
+
     destroy() {
         this.unbuild();
     }
@@ -136,6 +158,38 @@ class Instance {
                 x: (-0.5 + event.offsetX / this.dimensions.width) * 2,
                 y: (-0.5 + event.offsetY / this.dimensions.height) * 2,
             });
+    }
+
+    onMouseLeave(event) {
+        if (this.visual)
+            this.visual.setPointerPosition({
+                x: 0,
+                y: 0,
+            });
+    }
+
+    onClick(event) {
+        // this.currentIndex.set(wrap(this.currentIndex.get() + 1, this.data.items.length));
+    }
+
+    onApi(event) {
+        const { action, index } = event?.detail;
+        if (!action || !API_ACTIONS.includes(action)) return;
+
+        console.log('Instance.onApi()', action, index);
+
+        switch (action) {
+            case 'prev':
+                this.go(this.currentIndex.get() - 1);
+                break;
+
+            case 'next':
+                this.go(this.currentIndex.get() + 1);
+                break;
+
+            case 'go':
+                this.go(index);
+        }
     }
 }
 
