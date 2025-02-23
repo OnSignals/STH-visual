@@ -142,14 +142,14 @@
       this[globalName] = mainExports;
     }
   }
-})({"dgD1e":[function(require,module,exports,__globalThis) {
+})({"h8wh9":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "d6ea1d42532a7575";
 var HMR_USE_SSE = false;
-module.bundle.HMR_BUNDLE_ID = "b9ff98ae71490ebc";
+module.bundle.HMR_BUNDLE_ID = "dfb4cc5aabf505c8";
 "use strict";
 /* global HMR_HOST, HMR_PORT, HMR_ENV_HASH, HMR_SECURE, HMR_USE_SSE, chrome, browser, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
 import type {
@@ -1606,7 +1606,7 @@ class Visual {
     }
 }
 
-},{"@superstructure.net/utils":"1pf5i","three":"ktPTu","./Item":"58edv","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","three-perf":"l3cF8"}],"1pf5i":[function(require,module,exports,__globalThis) {
+},{"@superstructure.net/utils":"1pf5i","three":"ktPTu","three-perf":"l3cF8","./Item":"58edv","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1pf5i":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _mathJs = require("./math.js");
@@ -34621,402 +34621,7 @@ if (typeof window !== 'undefined') {
     else window.__THREE__ = REVISION;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"58edv":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Item", ()=>Item);
-var _three = require("three");
-var _customMaterial = require("./CustomMaterial");
-var _videoElement = require("./VideoElement");
-var _object3D = require("./utils/object3d");
-var _utils = require("@superstructure.net/utils");
-const PLANE_DIVISIONS = 128;
-const TRANSITION = {
-    y: 16
-};
-class Item {
-    constructor(data){
-        console.log('new Item', data);
-        if (!data) return;
-        this.data = data;
-        this.pointerPosition = {
-            x: 0,
-            y: 0
-        };
-        this.video = null;
-        this.texture = null;
-        this.previewTexture = null;
-        this.object = null;
-        this.screen = null;
-        this.is = {
-            // loading: false,
-            loadingTexture: false,
-            loadingPreviewTexture: false
-        };
-        this.transition = {
-            y: TRANSITION.y,
-            opacity: 0
-        };
-        this.groups = {};
-    }
-    build() {
-        console.log('Item.build()', this.data.id);
-        const { width: videoWidth, height: videoHeight } = this.data?.video;
-        // Object
-        this.groups.object = new (0, _three.Group)();
-        this.groups.object.visible = false;
-        // - Transition
-        this.groups.transition = new (0, _three.Group)();
-        // -- InputRotation
-        this.groups.inputRotation = new (0, _three.Group)();
-        // --- AutoRotation
-        this.groups.autoRotation = new (0, _three.Group)();
-        // ---- Scale
-        this.groups.scale = new (0, _three.Group)();
-        this.groups.scale.scale.set(12, 12, 12);
-        // ----- Screen
-        // const screenMaterial = new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide });
-        const screenMaterial = (0, _customMaterial.CustomMaterial).clone();
-        screenMaterial.uniforms.displacementScale.value = -0.5;
-        this.screen = new (0, _three.Mesh)(new (0, _three.PlaneGeometry)(1, 1 / (videoWidth / videoHeight), PLANE_DIVISIONS, PLANE_DIVISIONS), screenMaterial);
-        this.groups.object.add(this.groups.transition);
-        this.groups.transition.add(this.groups.inputRotation);
-        this.groups.inputRotation.add(this.groups.autoRotation);
-        this.groups.autoRotation.add(this.groups.scale);
-        this.groups.scale.add(this.screen);
-    }
-    unbuild() {
-        console.log('Item.unbuild()', this.data.id);
-        if (!this.groups.object) return;
-        // Scene graph
-        this.groups.object.removeFromParent();
-        // Children
-        (0, _object3D.disposeChildren)(this.groups.object);
-        // Video
-        this.unload();
-        // Cleanup
-        this.groups.object = null;
-        this.groups.transition = null;
-        this.groups.inputRotation = null;
-        this.groups.autoRotation = null;
-        this.groups.scale = null;
-        this.screen = null;
-    }
-    /**
-     * TODO: Handle edge case / race condition:
-     * load() und then unload() quickly.
-     * 
-
-     *
-     */ async load() {
-        console.log('Item.load()', this.data.id, this.is.loading, this.texture);
-        if (this.texture) return; // already loaded, simple as that...
-        // if (this.is.loading) return; // never a bad idea to have a flag
-        const { combined: videoUrl, thumbnail: previewImageUrl } = this.data?.video;
-        // Preview image
-        if (previewImageUrl) this.initPreviewTexture(previewImageUrl).then(({ texture } = {})=>{
-            // do not override already loaded video
-            // + correctly dispose temporary texture
-            if (this.texture) {
-                if (texture) texture.dispose();
-                return;
-            }
-            if (this.previewTexture) {
-                if (texture) texture.dispose();
-                return;
-            }
-            this.previewTexture = texture;
-            // Apply texture
-            this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
-            this.screen.material.uniforms.combinedTexture.value = this.previewTexture;
-            this.screen.material.needsUpdate = true;
-        });
-        // Video texture
-        if (videoUrl) this.initTexture(videoUrl).then(({ video, texture } = {})=>{
-            // do not override already loaded video or texture
-            // + correctly dispose temporary video or texture
-            if (this.video) {
-                if (video) video.destroy();
-            } else this.video = video;
-            if (this.texture) {
-                if (texture) texture.dispose();
-            } else this.texture = texture;
-            // Apply texture
-            if (this.screen && this.texture) {
-                this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
-                this.screen.material.uniforms.combinedTexture.value = this.texture;
-                this.screen.material.needsUpdate = true;
-            }
-        });
-    }
-    unload() {
-        console.log('Item.unload()', this.data.id);
-        if (this.texture) this.texture.dispose();
-        if (this.previewTexture) this.previewTexture.dispose();
-        if (this.video) this.video.destroy();
-        this.texture = null;
-        this.previewTexture = null;
-        this.video = null;
-    }
-    transitionIn() {
-        console.log('Item.transitionIn()', this.data.id);
-        // this.groups.object.visible = true;
-        this.transition.y = 0;
-        this.transition.opacity = 1;
-    }
-    transitionOut() {
-        console.log('Item.transitionOut()', this.data.id);
-        // this.groups.object.visible = false;
-        this.transition.y = TRANSITION.y;
-        this.transition.opacity = 0;
-    }
-    activate() {
-        console.log('Item.activate()', this.data.id);
-        if (!this.groups.object) return;
-        this.groups.object.visible = true;
-    }
-    deactivate() {
-        console.log('Item.deactivate()', this.data.id);
-        if (!this.groups.object) return;
-        this.groups.object.visible = false;
-    }
-    destroy() {
-        this.unbuild();
-    }
-    /**
-     * Build, loads video texture
-     *
-     * @param {*} videoUrl
-     * @returns
-     */ async initTexture(videoUrl) {
-        if (!videoUrl) return;
-        if (this.video) return; // do not create multiple videos
-        if (this.texture) return; // do not create multiple textures
-        if (this.is.loadingTexture) return;
-        console.log('initTexture()', this.data.id, this.texture);
-        this.is.loadingTexture = true;
-        // Create and load <video> element
-        const video = new (0, _videoElement.VideoElement)(videoUrl);
-        await video.build();
-        // Create video texture
-        const texture = new (0, _three.VideoTexture)(video.getVideoElement());
-        texture.colorSpace = (0, _three.SRGBColorSpace);
-        texture.minFilter = (0, _three.LinearFilter);
-        texture.magFilter = (0, _three.LinearFilter);
-        this.is.loadingTexture = false;
-        return {
-            video,
-            texture
-        };
-    }
-    async initPreviewTexture(previewImageUrl) {
-        console.log('initPreviewTexture()', this.data.id);
-        if (!previewImageUrl) return;
-        if (this.previewTexture) return; // do not create multiple textures
-        if (this.is.loadingPreviewTexture) return;
-        this.is.loadingPreviewTexture = true;
-        const loader = new (0, _three.TextureLoader)();
-        const texture = await loader.loadAsync(previewImageUrl);
-        this.is.loadingPreviewTexture = false;
-        return {
-            texture
-        };
-    }
-    onFrame(time, delta) {
-        // Auto Rotation
-        if (this.groups.autoRotation) {
-            this.groups.autoRotation.rotation.x = Math.sin(time) * 0.2;
-            this.groups.autoRotation.rotation.y = Math.sin(time) * 0.2;
-            this.groups.autoRotation.rotation.z = Math.sin(time) * 0.2;
-        }
-        // Input Rotation
-        if (this.groups.inputRotation) {
-            this.groups.inputRotation.rotation.y = (0, _utils.lerp)(this.groups.inputRotation.rotation.y, this.pointerPosition.x * 0.6, 0.005 * delta);
-            this.groups.inputRotation.rotation.x = (0, _utils.lerp)(this.groups.inputRotation.rotation.x, this.pointerPosition.y * -0.6, 0.005 * delta);
-        }
-        // Transition
-        // - Position
-        if (this.groups.transition) this.groups.transition.position.y = (0, _utils.lerp)(this.groups.transition.position.y, this.transition.y, 0.02);
-        // - Opacity
-        if (this.screen.material) {
-            if (this.screen.material?.uniforms?.opacity?.value) this.screen.material.uniforms.opacity.value = (0, _utils.lerp)(this.screen.material.uniforms.opacity.value, this.transition.opacity, 0.1);
-            else this.screen.material.opacity = (0, _utils.lerp)(this.screen.material.opacity, this.transition.opacity, 0.1);
-        }
-    }
-    getObject() {
-        return this?.groups?.object;
-    }
-    getTexture() {
-        return this?.texture;
-    }
-    setPointerPosition(pointerPosition) {
-        if (!pointerPosition) return;
-        this.pointerPosition.x = pointerPosition.x;
-        this.pointerPosition.y = pointerPosition.y;
-    }
-}
-
-},{"three":"ktPTu","./CustomMaterial":"fIxfy","./VideoElement":"1Lrne","./utils/object3d":"gHz3L","@superstructure.net/utils":"1pf5i","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fIxfy":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "CustomMaterial", ()=>CustomMaterial);
-var _three = require("three");
-const CustomMaterial = new (0, _three.ShaderMaterial)({
-    uniforms: {
-        time: {
-            value: 1.0
-        },
-        opacity: {
-            value: 1.0
-        },
-        displacementScale: {
-            value: 1.0
-        },
-        combinedTexture: {
-            value: new (0, _three.Texture)()
-        }
-    },
-    vertexShader: /*glsl*/ `
-uniform float displacementScale;
-uniform sampler2D combinedTexture;    
-varying vec2 vUv;
-
-void main() {
-    vUv = uv;
-    
-    float displacement = texture2D(combinedTexture, vec2( vUv.x, vUv.y / 2.0) ).x;
-    vec3 displacedPosition = vec3(position.x, position.y, position.z + displacement * displacementScale);
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
-}
-    `,
-    fragmentShader: /*glsl*/ `
-uniform float opacity;
-uniform float time;
-uniform sampler2D combinedTexture;
-varying vec2 vUv;
-    
-void main() {
-    vec4 textureColor = texture2D(combinedTexture, vec2( vUv.x, 0.5 + vUv.y / 2.0));  
-    
-    gl_FragColor = vec4(textureColor.rgb, opacity );
-}
-    `
-});
-
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1Lrne":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "VideoElement", ()=>VideoElement);
-var _videos = require("./utils/videos");
-class VideoElement {
-    constructor(url, videoAttributes = {}){
-        console.log('new VideoElement()', url);
-        if (!url) return;
-        this.url = url;
-        this.videoAttributes = videoAttributes;
-        this.videoElement = null;
-    }
-    async build() {
-        return new Promise(async (resolve)=>{
-            this.url = await (0, _videos.resolveRedirectedUrl)(this.url);
-            this.videoElement = Object.assign(document.createElement('video'), {
-                crossOrigin: 'anonymous',
-                loop: true,
-                muted: true,
-                playsInline: true,
-                ...this.videoAttributes
-            });
-            this.videoElement.addEventListener('canplay', ()=>{
-                this.videoElement.play().then(()=>{
-                    resolve();
-                }).catch((error)=>{
-                    console.error(error);
-                    resolve();
-                });
-            });
-            this.videoElement.src = this.url;
-        });
-    }
-    unbuild() {
-        if (!this.videoElement) return;
-        this.videoElement.src = null;
-        this.videoElement.load();
-        this.videoElement.remove();
-        this.videoElement = null;
-    }
-    getVideoElement() {
-        return this?.videoElement;
-    }
-    destroy() {
-        this.unbuild();
-    }
-}
-
-},{"./utils/videos":"1B6uG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1B6uG":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "resolveRedirectedUrl", ()=>resolveRedirectedUrl);
-async function resolveRedirectedUrl(url) {
-    if (!url) return null;
-    const response = await fetch(url, {
-        method: 'HEAD'
-    });
-    return response.url;
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gHz3L":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "disposeChildren", ()=>disposeChildren);
-var _three = require("three");
-function disposeChildren(object) {
-    if (!object || !object?.traverse || typeof object.traverse !== 'function') return;
-    object.traverse((node)=>{
-        if (node instanceof (0, _three.Mesh)) {
-            if (node?.geometry) {
-                console.log('found geometry to dispose', node?.geometry);
-                node.geometry.dispose();
-            }
-            if (node?.material) {
-                console.log('found material to dispose', node.material);
-                maps.forEach((map)=>{
-                    if (node.material?.[map]) {
-                        console.log('found map to dispose', map, node.material.map);
-                        node.material[map].dispose();
-                    }
-                });
-                node.material.dispose();
-            }
-        }
-    });
-}
-const maps = [
-    'alphaMap',
-    'map',
-    'aoMap',
-    'bumpMap',
-    'clearcoatMap',
-    'clearCoarNormalMap',
-    'clearcoatRoughnessMap',
-    'displacementMap',
-    'emissiveMap',
-    'envMap',
-    'iridescenceMap',
-    'iridescenceThicknessMap',
-    'lightMap',
-    'metalnessMap',
-    'normalMap',
-    'roughnessMap',
-    'sheenColorMap',
-    'sheenRoughnessMap',
-    'specularCOlorMap',
-    'specularIntensityMap',
-    'thicknessMap',
-    'transmissionMap'
-];
-
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"l3cF8":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"l3cF8":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ThreePerf", ()=>(0, _threePerfMjs.ThreePerf));
@@ -49821,6 +49426,401 @@ class GLPerf {
     }
 }
 
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"58edv":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Item", ()=>Item);
+var _three = require("three");
+var _customMaterial = require("./CustomMaterial");
+var _videoElement = require("./VideoElement");
+var _object3D = require("./utils/object3d");
+var _utils = require("@superstructure.net/utils");
+const PLANE_DIVISIONS = 128;
+const TRANSITION = {
+    y: 16
+};
+class Item {
+    constructor(data){
+        console.log('new Item', data);
+        if (!data) return;
+        this.data = data;
+        this.pointerPosition = {
+            x: 0,
+            y: 0
+        };
+        this.video = null;
+        this.texture = null;
+        this.previewTexture = null;
+        this.object = null;
+        this.screen = null;
+        this.is = {
+            // loading: false,
+            loadingTexture: false,
+            loadingPreviewTexture: false
+        };
+        this.transition = {
+            y: TRANSITION.y,
+            opacity: 0
+        };
+        this.groups = {};
+    }
+    build() {
+        console.log('Item.build()', this.data.id);
+        const { width: videoWidth, height: videoHeight } = this.data?.video;
+        // Object
+        this.groups.object = new (0, _three.Group)();
+        this.groups.object.visible = false;
+        // - Transition
+        this.groups.transition = new (0, _three.Group)();
+        // -- InputRotation
+        this.groups.inputRotation = new (0, _three.Group)();
+        // --- AutoRotation
+        this.groups.autoRotation = new (0, _three.Group)();
+        // ---- Scale
+        this.groups.scale = new (0, _three.Group)();
+        this.groups.scale.scale.set(12, 12, 12);
+        // ----- Screen
+        // const screenMaterial = new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide });
+        const screenMaterial = (0, _customMaterial.CustomMaterial).clone();
+        screenMaterial.uniforms.displacementScale.value = -0.5;
+        this.screen = new (0, _three.Mesh)(new (0, _three.PlaneGeometry)(1, 1 / (videoWidth / videoHeight), PLANE_DIVISIONS, PLANE_DIVISIONS), screenMaterial);
+        this.groups.object.add(this.groups.transition);
+        this.groups.transition.add(this.groups.inputRotation);
+        this.groups.inputRotation.add(this.groups.autoRotation);
+        this.groups.autoRotation.add(this.groups.scale);
+        this.groups.scale.add(this.screen);
+    }
+    unbuild() {
+        console.log('Item.unbuild()', this.data.id);
+        if (!this.groups.object) return;
+        // Scene graph
+        this.groups.object.removeFromParent();
+        // Children
+        (0, _object3D.disposeChildren)(this.groups.object);
+        // Video
+        this.unload();
+        // Cleanup
+        this.groups.object = null;
+        this.groups.transition = null;
+        this.groups.inputRotation = null;
+        this.groups.autoRotation = null;
+        this.groups.scale = null;
+        this.screen = null;
+    }
+    /**
+     * TODO: Handle edge case / race condition:
+     * load() und then unload() quickly.
+     * 
+
+     *
+     */ async load() {
+        console.log('Item.load()', this.data.id, this.is.loading, this.texture);
+        if (this.texture) return; // already loaded, simple as that...
+        // if (this.is.loading) return; // never a bad idea to have a flag
+        const { combined: videoUrl, thumbnail: previewImageUrl } = this.data?.video;
+        // Preview image
+        if (previewImageUrl) this.initPreviewTexture(previewImageUrl).then(({ texture } = {})=>{
+            // do not override already loaded video
+            // + correctly dispose temporary texture
+            if (this.texture) {
+                if (texture) texture.dispose();
+                return;
+            }
+            if (this.previewTexture) {
+                if (texture) texture.dispose();
+                return;
+            }
+            this.previewTexture = texture;
+            // Apply texture
+            this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
+            this.screen.material.uniforms.combinedTexture.value = this.previewTexture;
+            this.screen.material.needsUpdate = true;
+        });
+        // Video texture
+        if (videoUrl) this.initTexture(videoUrl).then(({ video, texture } = {})=>{
+            // do not override already loaded video or texture
+            // + correctly dispose temporary video or texture
+            if (this.video) {
+                if (video) video.destroy();
+            } else this.video = video;
+            if (this.texture) {
+                if (texture) texture.dispose();
+            } else this.texture = texture;
+            // Apply texture
+            if (this.screen && this.texture) {
+                this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
+                this.screen.material.uniforms.combinedTexture.value = this.texture;
+                this.screen.material.needsUpdate = true;
+            }
+        });
+    }
+    unload() {
+        console.log('Item.unload()', this.data.id);
+        if (this.texture) this.texture.dispose();
+        if (this.previewTexture) this.previewTexture.dispose();
+        if (this.video) this.video.destroy();
+        this.texture = null;
+        this.previewTexture = null;
+        this.video = null;
+    }
+    transitionIn() {
+        console.log('Item.transitionIn()', this.data.id);
+        // this.groups.object.visible = true;
+        this.transition.y = 0;
+        this.transition.opacity = 1;
+    }
+    transitionOut() {
+        console.log('Item.transitionOut()', this.data.id);
+        // this.groups.object.visible = false;
+        this.transition.y = TRANSITION.y;
+        this.transition.opacity = 0;
+    }
+    activate() {
+        console.log('Item.activate()', this.data.id);
+        if (!this.groups.object) return;
+        this.groups.object.visible = true;
+    }
+    deactivate() {
+        console.log('Item.deactivate()', this.data.id);
+        if (!this.groups.object) return;
+        this.groups.object.visible = false;
+    }
+    destroy() {
+        this.unbuild();
+    }
+    /**
+     * Build, loads video texture
+     *
+     * @param {*} videoUrl
+     * @returns
+     */ async initTexture(videoUrl) {
+        if (!videoUrl) return;
+        if (this.video) return; // do not create multiple videos
+        if (this.texture) return; // do not create multiple textures
+        if (this.is.loadingTexture) return;
+        console.log('initTexture()', this.data.id, this.texture);
+        this.is.loadingTexture = true;
+        // Create and load <video> element
+        const video = new (0, _videoElement.VideoElement)(videoUrl);
+        await video.build();
+        // Create video texture
+        const texture = new (0, _three.VideoTexture)(video.getVideoElement());
+        texture.colorSpace = (0, _three.SRGBColorSpace);
+        texture.minFilter = (0, _three.LinearFilter);
+        texture.magFilter = (0, _three.LinearFilter);
+        this.is.loadingTexture = false;
+        return {
+            video,
+            texture
+        };
+    }
+    async initPreviewTexture(previewImageUrl) {
+        console.log('initPreviewTexture()', this.data.id);
+        if (!previewImageUrl) return;
+        if (this.previewTexture) return; // do not create multiple textures
+        if (this.is.loadingPreviewTexture) return;
+        this.is.loadingPreviewTexture = true;
+        const loader = new (0, _three.TextureLoader)();
+        const texture = await loader.loadAsync(previewImageUrl);
+        this.is.loadingPreviewTexture = false;
+        return {
+            texture
+        };
+    }
+    onFrame(time, delta) {
+        // Auto Rotation
+        if (this.groups.autoRotation) {
+            this.groups.autoRotation.rotation.x = Math.sin(time) * 0.2;
+            this.groups.autoRotation.rotation.y = Math.sin(time) * 0.2;
+            this.groups.autoRotation.rotation.z = Math.sin(time) * 0.2;
+        }
+        // Input Rotation
+        if (this.groups.inputRotation) {
+            this.groups.inputRotation.rotation.y = (0, _utils.lerp)(this.groups.inputRotation.rotation.y, this.pointerPosition.x * 0.6, 0.005 * delta);
+            this.groups.inputRotation.rotation.x = (0, _utils.lerp)(this.groups.inputRotation.rotation.x, this.pointerPosition.y * -0.6, 0.005 * delta);
+        }
+        // Transition
+        // - Position
+        if (this.groups.transition) this.groups.transition.position.y = (0, _utils.lerp)(this.groups.transition.position.y, this.transition.y, 0.02);
+        // - Opacity
+        if (this.screen.material) {
+            if (this.screen.material?.uniforms?.opacity?.value) this.screen.material.uniforms.opacity.value = (0, _utils.lerp)(this.screen.material.uniforms.opacity.value, this.transition.opacity, 0.1);
+            else this.screen.material.opacity = (0, _utils.lerp)(this.screen.material.opacity, this.transition.opacity, 0.1);
+        }
+    }
+    getObject() {
+        return this?.groups?.object;
+    }
+    getTexture() {
+        return this?.texture;
+    }
+    setPointerPosition(pointerPosition) {
+        if (!pointerPosition) return;
+        this.pointerPosition.x = pointerPosition.x;
+        this.pointerPosition.y = pointerPosition.y;
+    }
+}
+
+},{"three":"ktPTu","./CustomMaterial":"fIxfy","./VideoElement":"1Lrne","./utils/object3d":"gHz3L","@superstructure.net/utils":"1pf5i","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fIxfy":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CustomMaterial", ()=>CustomMaterial);
+var _three = require("three");
+const CustomMaterial = new (0, _three.ShaderMaterial)({
+    uniforms: {
+        time: {
+            value: 1.0
+        },
+        opacity: {
+            value: 1.0
+        },
+        displacementScale: {
+            value: 1.0
+        },
+        combinedTexture: {
+            value: new (0, _three.Texture)()
+        }
+    },
+    vertexShader: /*glsl*/ `
+uniform float displacementScale;
+uniform sampler2D combinedTexture;    
+varying vec2 vUv;
+
+void main() {
+    vUv = uv;
+    
+    float displacement = texture2D(combinedTexture, vec2( vUv.x, vUv.y / 2.0) ).x;
+    vec3 displacedPosition = vec3(position.x, position.y, position.z + displacement * displacementScale);
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
+}
+    `,
+    fragmentShader: /*glsl*/ `
+uniform float opacity;
+uniform float time;
+uniform sampler2D combinedTexture;
+varying vec2 vUv;
+    
+void main() {
+    vec4 textureColor = texture2D(combinedTexture, vec2( vUv.x, 0.5 + vUv.y / 2.0));  
+    
+    gl_FragColor = vec4(textureColor.rgb, opacity );
+}
+    `
+});
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1Lrne":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "VideoElement", ()=>VideoElement);
+var _videos = require("./utils/videos");
+class VideoElement {
+    constructor(url, videoAttributes = {}){
+        console.log('new VideoElement()', url);
+        if (!url) return;
+        this.url = url;
+        this.videoAttributes = videoAttributes;
+        this.videoElement = null;
+    }
+    async build() {
+        return new Promise(async (resolve)=>{
+            this.url = await (0, _videos.resolveRedirectedUrl)(this.url);
+            this.videoElement = Object.assign(document.createElement('video'), {
+                crossOrigin: 'anonymous',
+                loop: true,
+                muted: true,
+                playsInline: true,
+                ...this.videoAttributes
+            });
+            this.videoElement.addEventListener('canplay', ()=>{
+                this.videoElement.play().then(()=>{
+                    resolve();
+                }).catch((error)=>{
+                    console.error(error);
+                    resolve();
+                });
+            });
+            this.videoElement.src = this.url;
+        });
+    }
+    unbuild() {
+        if (!this.videoElement) return;
+        this.videoElement.src = null;
+        this.videoElement.load();
+        this.videoElement.remove();
+        this.videoElement = null;
+    }
+    getVideoElement() {
+        return this?.videoElement;
+    }
+    destroy() {
+        this.unbuild();
+    }
+}
+
+},{"./utils/videos":"1B6uG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1B6uG":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "resolveRedirectedUrl", ()=>resolveRedirectedUrl);
+async function resolveRedirectedUrl(url) {
+    if (!url) return null;
+    const response = await fetch(url, {
+        method: 'HEAD'
+    });
+    return response.url;
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gHz3L":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "disposeChildren", ()=>disposeChildren);
+var _three = require("three");
+function disposeChildren(object) {
+    if (!object || !object?.traverse || typeof object.traverse !== 'function') return;
+    object.traverse((node)=>{
+        if (node instanceof (0, _three.Mesh)) {
+            if (node?.geometry) {
+                console.log('found geometry to dispose', node?.geometry);
+                node.geometry.dispose();
+            }
+            if (node?.material) {
+                console.log('found material to dispose', node.material);
+                maps.forEach((map)=>{
+                    if (node.material?.[map]) {
+                        console.log('found map to dispose', map, node.material.map);
+                        node.material[map].dispose();
+                    }
+                });
+                node.material.dispose();
+            }
+        }
+    });
+}
+const maps = [
+    'alphaMap',
+    'map',
+    'aoMap',
+    'bumpMap',
+    'clearcoatMap',
+    'clearCoarNormalMap',
+    'clearcoatRoughnessMap',
+    'displacementMap',
+    'emissiveMap',
+    'envMap',
+    'iridescenceMap',
+    'iridescenceThicknessMap',
+    'lightMap',
+    'metalnessMap',
+    'normalMap',
+    'roughnessMap',
+    'sheenColorMap',
+    'sheenRoughnessMap',
+    'specularCOlorMap',
+    'specularIntensityMap',
+    'thicknessMap',
+    'transmissionMap'
+];
+
 },{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iz8Lw":[function(require,module,exports,__globalThis) {
 /**
  * 
@@ -49988,6 +49988,6 @@ class s {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["dgD1e","8lqZg"], "8lqZg", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["h8wh9","8lqZg"], "8lqZg", "parcelRequire94c2")
 
-//# sourceMappingURL=index.71490ebc.js.map
+//# sourceMappingURL=index.abf505c8.js.map
