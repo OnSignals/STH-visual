@@ -16,6 +16,10 @@ class Visual {
         this.items = [];
         this.pointerPosition = { x: 0, y: 0 };
 
+        this.is = {
+            debug: window.location.href.includes('?debug'),
+        };
+
         this.build();
         this.resize();
 
@@ -58,13 +62,15 @@ class Visual {
         }
 
         // Stats
-        this.monitor = new ThreePerf({
-            anchorX: 'left',
-            anchorY: 'top',
-            domElement: document.body,
-            renderer: this.renderer,
-            scale: 0.6,
-        });
+        if (this.is.debug) {
+            this.monitor = new ThreePerf({
+                anchorX: 'left',
+                anchorY: 'top',
+                domElement: document.body,
+                renderer: this.renderer,
+                scale: 0.6,
+            });
+        }
     }
 
     unbuild() {
@@ -78,7 +84,7 @@ class Visual {
         if (this.renderer) this.renderer.dispose();
 
         // Stats
-        if (this.monitor) this.monitor.dispose();
+        if (this?.monitor) this.monitor.dispose();
     }
 
     resize(dimensions) {
@@ -126,11 +132,11 @@ class Visual {
                 item.onFrame(this.clock.getElapsedTime(), deltaNormalized);
             });
 
-        if (this.monitor) this.monitor.begin();
+        if (this?.monitor) this.monitor.begin();
 
         this.renderer.render(this.scene, this.camera);
 
-        if (this.monitor) this.monitor.end();
+        if (this?.monitor) this.monitor.end();
     }
 
     destroy() {
@@ -164,10 +170,10 @@ class Visual {
                 // close items
                 if (this.currentIndex.get() === i) {
                     // current item
-                    item.transitionIn();
+                    item.show();
                 } else {
                     // close not bit current
-                    item.transitionOut();
+                    item.hide();
                 }
 
                 await item.load();
@@ -175,7 +181,7 @@ class Visual {
                 item.activate();
             } else {
                 // not so close items
-                item.transitionOut();
+                item.hide();
                 item.unload();
                 item.deactivate();
             }

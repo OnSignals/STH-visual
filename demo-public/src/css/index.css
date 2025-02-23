@@ -1,5 +1,5 @@
 @import 'document';
-@import 'posts';
+@import 'items';
 
 #three-perf-ui {
     position: absolute !important;

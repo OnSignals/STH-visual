@@ -1,35 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>STH Visual Demo</title>
-
-        <link href="/index.0706b647.css" rel="stylesheet">
-
-        <link href="/index.c367dd36.css" rel="stylesheet">
-
-        <script src="/index.abf505c8.js" defer=""></script>
-    </head>
-    <body>
-        <header>
-    <h1 class="title">STHVisual Demo</h1>
-
-    <nav>
-        <a href="https://github.com/OnSignals/STH-visual">Github repository</a>
-        <a href="">Source code of this page</a>
-    </nav>
-
-    <code>
-        <pre>
-const customEvent = new CustomEvent("STHVisual/api", { detail: customEventData });
-instanceElement.dispatchEvent(customEvent); </pre>
-    </code>
-</header>
-
-
-        <main>
-            <section class="Items">
-    <article class="Item" style="aspect-ratio: 1; width: 50%" data-STHVisual-role="instance" data-STHVisual-data='{
+<section class="Items">
+    <article
+        class="Item"
+        style="width: 50%; aspect-ratio: 1"
+        data-STHVisual-role="instance"
+        data-STHVisual-data='{
 "title":"Visual Instance A",
 "items": [
   {
@@ -73,7 +47,8 @@ instanceElement.dispatchEvent(customEvent); </pre>
       "height": 720
     }
   }
-]}'>
+]}'
+    >
         <nav class="Item-ui">
             <button data-Demo-role="ui/prev">prev</button>
             <button data-Demo-role="ui/next">next</button>
@@ -81,7 +56,11 @@ instanceElement.dispatchEvent(customEvent); </pre>
         </nav>
     </article>
 
-    <article class="Item" style="aspect-ratio: 9 / 16; width: 15%" data-STHVisual-role="instance" data-STHVisual-data='{
+    <article
+        class="Item"
+        style="width: 15%; aspect-ratio: 9/16"
+        data-STHVisual-role="instance"
+        data-STHVisual-data='{
 "title":"Visual Instance B",
 "items": [
 {
@@ -101,7 +80,8 @@ instanceElement.dispatchEvent(customEvent); </pre>
   "height": 720
 }
 }
-]}'>
+]}'
+    >
         <nav class="Item-ui">
             <button data-Demo-role="ui/prev">prev</button>
             <button data-Demo-role="ui/next">next</button>
@@ -109,35 +89,3 @@ instanceElement.dispatchEvent(customEvent); </pre>
         </nav>
     </article>
 </section>
-
-        </main>
-
-        <script>/**
-             * Pseudo code to demonstrate how to trigger slider navigation on the
-             * STHVisual Module by calling a custom event on the instance element
-             *
-             * Event name is  `STHVisual/api`
-             * Data object needs to contain an action of `prev`, `next`, `go`
-             * `go`requires an additional index property in the data object
-             *
-             */ document.body.addEventListener('click', (event)=>{
-    // next / prev buttons
-    if (event.target.matches('[data-Demo-role^="ui"]')) {
-        event.preventDefault();
-        event.stopPropagation();
-        const action = event.target.getAttribute('data-Demo-role').replace('ui/', '');
-        const instanceElement = event.target.closest('[data-STHVisual-role~="instance"]');
-        const customEventData = {
-            action: action,
-            index: parseInt(event.target.getAttribute('data-Demo-index'))
-        };
-        const customEvent = new CustomEvent(`STHVisual/api`, {
-            detail: customEventData
-        });
-        instanceElement.dispatchEvent(customEvent);
-    }
-});
-
-</script>
-    </body>
-</html>

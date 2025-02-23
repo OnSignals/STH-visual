@@ -26,15 +26,16 @@ class Item {
         this.screen = null;
 
         this.is = {
+            active: false, // is this item the current item and transitioned
             // loading: false,
             loadingTexture: false,
             loadingPreviewTexture: false,
         };
 
-        this.transition = {
-            y: TRANSITION.y,
-            opacity: 0,
-        };
+        // this.transition = {
+        //     y: TRANSITION.y,
+        //     opacity: 0,
+        // };
 
         this.groups = {};
     }
@@ -179,20 +180,28 @@ class Item {
         this.video = null;
     }
 
-    transitionIn() {
-        console.log('Item.transitionIn()', this.data.id);
-        // this.groups.object.visible = true;
+    // transitionIn() {
+    //     console.log('Item.transitionIn()', this.data.id);
+    //     // this.groups.object.visible = true;
 
-        this.transition.y = 0;
-        this.transition.opacity = 1;
+    //     this.transition.y = 0;
+    //     this.transition.opacity = 1;
+    // }
+
+    // transitionOut() {
+    //     console.log('Item.transitionOut()', this.data.id);
+    //     // this.groups.object.visible = false;
+
+    //     this.transition.y = TRANSITION.y;
+    //     this.transition.opacity = 0;
+    // }
+
+    show() {
+        this.is.active = true;
     }
 
-    transitionOut() {
-        console.log('Item.transitionOut()', this.data.id);
-        // this.groups.object.visible = false;
-
-        this.transition.y = TRANSITION.y;
-        this.transition.opacity = 0;
+    hide() {
+        this.is.active = false;
     }
 
     activate() {
@@ -291,7 +300,11 @@ class Item {
         // Transition
         // - Position
         if (this.groups.transition) {
-            this.groups.transition.position.y = lerp(this.groups.transition.position.y, this.transition.y, 0.02);
+            this.groups.transition.position.y = lerp(
+                this.groups.transition.position.y,
+                this.is.active && this.is.loaded ? 0 : TRANSITION.y,
+                0.02
+            );
         }
 
         // - Opacity
@@ -299,11 +312,16 @@ class Item {
             if (this.screen.material?.uniforms?.opacity?.value) {
                 this.screen.material.uniforms.opacity.value = lerp(
                     this.screen.material.uniforms.opacity.value,
-                    this.transition.opacity,
+                    this.is.active && this.is.loaded ? 1 : TRANSITION.opacity,
+
                     0.1
                 );
             } else {
-                this.screen.material.opacity = lerp(this.screen.material.opacity, this.transition.opacity, 0.1);
+                this.screen.material.opacity = lerp(
+                    this.screen.material.opacity,
+                    this.is.active && this.is.loaded ? 1 : TRANSITION.opacity,
+                    0.1
+                );
             }
         }
     }

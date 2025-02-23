@@ -1487,6 +1487,9 @@ class Visual {
             x: 0,
             y: 0
         };
+        this.is = {
+            debug: window.location.href.includes('?debug')
+        };
         this.build();
         this.resize();
         this.currentIndex.on(()=>{
@@ -1519,7 +1522,7 @@ class Visual {
             this.items.push(item);
         });
         // Stats
-        this.monitor = new (0, _threePerf.ThreePerf)({
+        if (this.is.debug) this.monitor = new (0, _threePerf.ThreePerf)({
             anchorX: 'left',
             anchorY: 'top',
             domElement: document.body,
@@ -1536,7 +1539,7 @@ class Visual {
         // Renderer
         if (this.renderer) this.renderer.dispose();
         // Stats
-        if (this.monitor) this.monitor.dispose();
+        if (this?.monitor) this.monitor.dispose();
     }
     resize(dimensions) {
         if (!dimensions) return;
@@ -1566,9 +1569,9 @@ class Visual {
             item.setPointerPosition(this.pointerPosition);
             item.onFrame(this.clock.getElapsedTime(), deltaNormalized);
         });
-        if (this.monitor) this.monitor.begin();
+        if (this?.monitor) this.monitor.begin();
         this.renderer.render(this.scene, this.camera);
-        if (this.monitor) this.monitor.end();
+        if (this?.monitor) this.monitor.end();
     }
     destroy() {
         this.stop();
@@ -1590,15 +1593,15 @@ class Visual {
             if (Math.abs(this.currentIndex.get() - i) <= 1 || Math.abs(this.currentIndex.get() + this.items.length - i) <= 1) {
                 // close items
                 if (this.currentIndex.get() === i) // current item
-                item.transitionIn();
+                item.show();
                 else // close not bit current
-                item.transitionOut();
+                item.hide();
                 await item.load();
                 // this.renderer.initTexture(item.getTexture());
                 item.activate();
             } else {
                 // not so close items
-                item.transitionOut();
+                item.hide();
                 item.unload();
                 item.deactivate();
             }
@@ -49454,14 +49457,15 @@ class Item {
         this.object = null;
         this.screen = null;
         this.is = {
+            active: false,
             // loading: false,
             loadingTexture: false,
             loadingPreviewTexture: false
         };
-        this.transition = {
-            y: TRANSITION.y,
-            opacity: 0
-        };
+        // this.transition = {
+        //     y: TRANSITION.y,
+        //     opacity: 0,
+        // };
         this.groups = {};
     }
     build() {
@@ -49563,17 +49567,23 @@ class Item {
         this.previewTexture = null;
         this.video = null;
     }
-    transitionIn() {
-        console.log('Item.transitionIn()', this.data.id);
-        // this.groups.object.visible = true;
-        this.transition.y = 0;
-        this.transition.opacity = 1;
+    // transitionIn() {
+    //     console.log('Item.transitionIn()', this.data.id);
+    //     // this.groups.object.visible = true;
+    //     this.transition.y = 0;
+    //     this.transition.opacity = 1;
+    // }
+    // transitionOut() {
+    //     console.log('Item.transitionOut()', this.data.id);
+    //     // this.groups.object.visible = false;
+    //     this.transition.y = TRANSITION.y;
+    //     this.transition.opacity = 0;
+    // }
+    show() {
+        this.is.active = true;
     }
-    transitionOut() {
-        console.log('Item.transitionOut()', this.data.id);
-        // this.groups.object.visible = false;
-        this.transition.y = TRANSITION.y;
-        this.transition.opacity = 0;
+    hide() {
+        this.is.active = false;
     }
     activate() {
         console.log('Item.activate()', this.data.id);
@@ -49641,11 +49651,11 @@ class Item {
         }
         // Transition
         // - Position
-        if (this.groups.transition) this.groups.transition.position.y = (0, _utils.lerp)(this.groups.transition.position.y, this.transition.y, 0.02);
+        if (this.groups.transition) this.groups.transition.position.y = (0, _utils.lerp)(this.groups.transition.position.y, this.is.active && this.is.loaded ? 0 : TRANSITION.y, 0.02);
         // - Opacity
         if (this.screen.material) {
-            if (this.screen.material?.uniforms?.opacity?.value) this.screen.material.uniforms.opacity.value = (0, _utils.lerp)(this.screen.material.uniforms.opacity.value, this.transition.opacity, 0.1);
-            else this.screen.material.opacity = (0, _utils.lerp)(this.screen.material.opacity, this.transition.opacity, 0.1);
+            if (this.screen.material?.uniforms?.opacity?.value) this.screen.material.uniforms.opacity.value = (0, _utils.lerp)(this.screen.material.uniforms.opacity.value, this.is.active && this.is.loaded ? 1 : TRANSITION.opacity, 0.1);
+            else this.screen.material.opacity = (0, _utils.lerp)(this.screen.material.opacity, this.is.active && this.is.loaded ? 1 : TRANSITION.opacity, 0.1);
         }
     }
     getObject() {
