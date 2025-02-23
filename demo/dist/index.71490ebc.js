@@ -1474,9 +1474,6 @@ parcelHelpers.defineInteropFlag(exports);
 var _utils = require("@superstructure.net/utils");
 var _three = require("three");
 var _threePerf = require("three-perf");
-var _customMaterial = require("./CustomMaterial");
-var _videos = require("./utils/videos");
-var _videoElement = require("./VideoElement");
 var _item = require("./Item");
 const MAX_DPR = 2;
 class Visual {
@@ -1609,7 +1606,7 @@ class Visual {
     }
 }
 
-},{"@superstructure.net/utils":"1pf5i","three":"ktPTu","./CustomMaterial":"fIxfy","./utils/videos":"1B6uG","./VideoElement":"1Lrne","./Item":"58edv","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","three-perf":"l3cF8"}],"1pf5i":[function(require,module,exports,__globalThis) {
+},{"@superstructure.net/utils":"1pf5i","three":"ktPTu","./Item":"58edv","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","three-perf":"l3cF8"}],"1pf5i":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _mathJs = require("./math.js");
@@ -34624,116 +34621,7 @@ if (typeof window !== 'undefined') {
     else window.__THREE__ = REVISION;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fIxfy":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "CustomMaterial", ()=>CustomMaterial);
-var _three = require("three");
-const CustomMaterial = new (0, _three.ShaderMaterial)({
-    uniforms: {
-        time: {
-            value: 1.0
-        },
-        opacity: {
-            value: 1.0
-        },
-        displacementScale: {
-            value: 1.0
-        },
-        combinedTexture: {
-            value: new (0, _three.Texture)()
-        }
-    },
-    vertexShader: /*glsl*/ `
-uniform float displacementScale;
-uniform sampler2D combinedTexture;    
-varying vec2 vUv;
-
-void main() {
-    vUv = uv;
-    
-    float displacement = texture2D(combinedTexture, vec2( vUv.x, vUv.y / 2.0) ).x;
-    vec3 displacedPosition = vec3(position.x, position.y, position.z + displacement * displacementScale);
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
-}
-    `,
-    fragmentShader: /*glsl*/ `
-uniform float opacity;
-uniform float time;
-uniform sampler2D combinedTexture;
-varying vec2 vUv;
-    
-void main() {
-    vec4 textureColor = texture2D(combinedTexture, vec2( vUv.x, 0.5 + vUv.y / 2.0));  
-    
-    gl_FragColor = vec4(textureColor.rgb, opacity );
-}
-    `
-});
-
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1B6uG":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "resolveRedirectedUrl", ()=>resolveRedirectedUrl);
-async function resolveRedirectedUrl(url) {
-    if (!url) return null;
-    const response = await fetch(url, {
-        method: 'HEAD'
-    });
-    return response.url;
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1Lrne":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "VideoElement", ()=>VideoElement);
-var _videos = require("./utils/videos");
-class VideoElement {
-    constructor(url, videoAttributes = {}){
-        console.log('new VideoElement()', url);
-        if (!url) return;
-        this.url = url;
-        this.videoAttributes = videoAttributes;
-        this.videoElement = null;
-    }
-    async build() {
-        return new Promise(async (resolve)=>{
-            this.url = await (0, _videos.resolveRedirectedUrl)(this.url);
-            this.videoElement = Object.assign(document.createElement('video'), {
-                crossOrigin: 'anonymous',
-                loop: true,
-                muted: true,
-                playsInline: true,
-                ...this.videoAttributes
-            });
-            this.videoElement.addEventListener('canplay', ()=>{
-                this.videoElement.play().then(()=>{
-                    resolve();
-                }).catch((error)=>{
-                    console.error(error);
-                    resolve();
-                });
-            });
-            this.videoElement.src = this.url;
-        });
-    }
-    unbuild() {
-        if (!this.videoElement) return;
-        this.videoElement.src = null;
-        this.videoElement.load();
-        this.videoElement.remove();
-        this.videoElement = null;
-    }
-    getVideoElement() {
-        return this?.videoElement;
-    }
-    destroy() {
-        this.unbuild();
-    }
-}
-
-},{"./utils/videos":"1B6uG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"58edv":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"58edv":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Item", ()=>Item);
@@ -34968,7 +34856,116 @@ class Item {
     }
 }
 
-},{"three":"ktPTu","./CustomMaterial":"fIxfy","./VideoElement":"1Lrne","./utils/object3d":"gHz3L","@superstructure.net/utils":"1pf5i","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gHz3L":[function(require,module,exports,__globalThis) {
+},{"three":"ktPTu","./CustomMaterial":"fIxfy","./VideoElement":"1Lrne","./utils/object3d":"gHz3L","@superstructure.net/utils":"1pf5i","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fIxfy":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CustomMaterial", ()=>CustomMaterial);
+var _three = require("three");
+const CustomMaterial = new (0, _three.ShaderMaterial)({
+    uniforms: {
+        time: {
+            value: 1.0
+        },
+        opacity: {
+            value: 1.0
+        },
+        displacementScale: {
+            value: 1.0
+        },
+        combinedTexture: {
+            value: new (0, _three.Texture)()
+        }
+    },
+    vertexShader: /*glsl*/ `
+uniform float displacementScale;
+uniform sampler2D combinedTexture;    
+varying vec2 vUv;
+
+void main() {
+    vUv = uv;
+    
+    float displacement = texture2D(combinedTexture, vec2( vUv.x, vUv.y / 2.0) ).x;
+    vec3 displacedPosition = vec3(position.x, position.y, position.z + displacement * displacementScale);
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
+}
+    `,
+    fragmentShader: /*glsl*/ `
+uniform float opacity;
+uniform float time;
+uniform sampler2D combinedTexture;
+varying vec2 vUv;
+    
+void main() {
+    vec4 textureColor = texture2D(combinedTexture, vec2( vUv.x, 0.5 + vUv.y / 2.0));  
+    
+    gl_FragColor = vec4(textureColor.rgb, opacity );
+}
+    `
+});
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1Lrne":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "VideoElement", ()=>VideoElement);
+var _videos = require("./utils/videos");
+class VideoElement {
+    constructor(url, videoAttributes = {}){
+        console.log('new VideoElement()', url);
+        if (!url) return;
+        this.url = url;
+        this.videoAttributes = videoAttributes;
+        this.videoElement = null;
+    }
+    async build() {
+        return new Promise(async (resolve)=>{
+            this.url = await (0, _videos.resolveRedirectedUrl)(this.url);
+            this.videoElement = Object.assign(document.createElement('video'), {
+                crossOrigin: 'anonymous',
+                loop: true,
+                muted: true,
+                playsInline: true,
+                ...this.videoAttributes
+            });
+            this.videoElement.addEventListener('canplay', ()=>{
+                this.videoElement.play().then(()=>{
+                    resolve();
+                }).catch((error)=>{
+                    console.error(error);
+                    resolve();
+                });
+            });
+            this.videoElement.src = this.url;
+        });
+    }
+    unbuild() {
+        if (!this.videoElement) return;
+        this.videoElement.src = null;
+        this.videoElement.load();
+        this.videoElement.remove();
+        this.videoElement = null;
+    }
+    getVideoElement() {
+        return this?.videoElement;
+    }
+    destroy() {
+        this.unbuild();
+    }
+}
+
+},{"./utils/videos":"1B6uG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1B6uG":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "resolveRedirectedUrl", ()=>resolveRedirectedUrl);
+async function resolveRedirectedUrl(url) {
+    if (!url) return null;
+    const response = await fetch(url, {
+        method: 'HEAD'
+    });
+    return response.url;
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gHz3L":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "disposeChildren", ()=>disposeChildren);

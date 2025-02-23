@@ -1,25 +1,6 @@
 import { clamp } from '@superstructure.net/utils';
-import {
-    ACESFilmicToneMapping,
-    AmbientLight,
-    BoxGeometry,
-    Clock,
-    DoubleSide,
-    LinearFilter,
-    Mesh,
-    MeshBasicMaterial,
-    MeshStandardMaterial,
-    PerspectiveCamera,
-    RGBFormat,
-    Scene,
-    SRGBColorSpace,
-    VideoTexture,
-    WebGLRenderer,
-} from 'three';
+import { ACESFilmicToneMapping, Clock, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 import { ThreePerf } from 'three-perf';
-import { CustomMaterial } from './CustomMaterial';
-import { resolveRedirectedUrl } from './utils/videos';
-import { VideoElement } from './VideoElement';
 import { Item } from './Item';
 
 const MAX_DPR = 2;

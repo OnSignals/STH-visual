@@ -1,18 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>STH Visual Demo</title>
-
-        <link href="/index.d2094bd7.css" rel="stylesheet">
-
-        <link href="/index.f303cde5.css" rel="stylesheet">
-
-        <script src="/index.71490ebc.js" defer=""></script>
-    </head>
-    <body>
-        <section class="Posts">
-            <article class="Post" data-sthvisual-role="instance" data-sthvisual-data='{
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>STH Visual Demo</title><link href="/index.e506f03d.css" rel="stylesheet"><link href="/index.09b88449.css" rel="stylesheet"></head><body> DEMO PUBLIC <section class="Posts"> <article class="Post" data-sthvisual-role="instance" data-sthvisual-data='{
 "title":"Visual Instance A",
 "items": [
   {
@@ -56,69 +42,4 @@
       "height": 720
     }
   }
-]}'>
-                <nav class="Post-ui">
-                    <button data-demo-role="ui/prev">prev</button>
-                    <button data-demo-role="ui/next">next</button>
-                    <button data-demo-role="ui/go" data-demo-index="3">[3]</button>
-                </nav>
-            </article>
-
-            <article class="Post" data-sthvisual-role="instance" data-sthvisual-data='{
-"title":"Visual Instance B",
-"items": [
-{
-"id":"item-0",
-"video": {
-  "combined": "https://player.vimeo.com/progressive_redirect/playback/1058558705/rendition/1080p/file.mp4?loc=external&log_user=0&signature=cae0020d77bdfd43a204a1578be86f2117093ef078033494cff113cb333842f4&user_id=101060412",
-  "width": 1280,
-  "height": 720,
-  "thumbnail": "https://i.vimeocdn.com/video/1984738722-249d5524ab725c54b19ef36f818b18c5e41c699a44e9779887eb721942476237-d_126x142"
-}
-},
-{
-"id":"item-1",
-"video": {
-  "combined": "https://player.vimeo.com/progressive_redirect/playback/1058558705/rendition/1080p/file.mp4?loc=external&log_user=0&signature=cae0020d77bdfd43a204a1578be86f2117093ef078033494cff113cb333842f4&user_id=101060412",
-  "width": 1280,
-  "height": 720
-}
-}
-]}'>
-                <nav class="Post-ui">
-                    <button data-demo-role="ui/prev">prev</button>
-                    <button data-demo-role="ui/next">next</button>
-                    <button data-demo-role="ui/go" data-demo-index="3">[3]</button>
-                </nav>
-            </article>
-        </section>
-
-        <script>/**
-             * Pseudo code to demonstrate how to trigger slider navigation on the
-             * STHVisual Module by calling a custom event on the instance element
-             *
-             * Event name is  `STHVisual/api`
-             * Data object needs to contain an action of `prev`, `next`, `go`
-             * `go`requires an additional index property in the data object
-             *
-             */ document.body.addEventListener('click', (event)=>{
-    // next / prev buttons
-    if (event.target.matches('[data-Demo-role^="ui"]')) {
-        event.preventDefault();
-        event.stopPropagation();
-        const action = event.target.getAttribute('data-Demo-role').replace('ui/', '');
-        const instanceElement = event.target.closest('[data-STHVisual-role~="instance"]');
-        const customEventData = {
-            action: action,
-            index: parseInt(event.target.getAttribute('data-Demo-index'))
-        };
-        const customEvent = new CustomEvent(`STHVisual/api`, {
-            detail: customEventData
-        });
-        instanceElement.dispatchEvent(customEvent);
-    }
-});
-
-</script>
-    </body>
-</html>
+]}'> <nav class="Post-ui"> <button data-demo-role="ui/prev">prev</button> <button data-demo-role="ui/next">next</button> <button data-demo-role="ui/go" data-demo-index="3">[3]</button> </nav> </article> </section> </body></html>

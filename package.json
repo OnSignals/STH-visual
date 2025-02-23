@@ -19,6 +19,10 @@
             "engines": {
                 "browsers": "> 0.25%, last 2 versions, not dead, IE 11"
             }
+        },
+        "demo-public": {
+            "source": "demo-public/index.html",
+            "distDir": "demo-public/dist"
         }
     },
     "scripts": {

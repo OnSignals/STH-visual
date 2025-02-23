@@ -1,14 +1,4 @@
-import {
-    DoubleSide,
-    Group,
-    LinearFilter,
-    Mesh,
-    MeshBasicMaterial,
-    PlaneGeometry,
-    SRGBColorSpace,
-    TextureLoader,
-    VideoTexture,
-} from 'three';
+import { Group, LinearFilter, Mesh, PlaneGeometry, SRGBColorSpace, TextureLoader, VideoTexture } from 'three';
 import { CustomMaterial } from './CustomMaterial';
 import { VideoElement } from './VideoElement';
 import { disposeChildren } from './utils/object3d';
