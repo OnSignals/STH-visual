@@ -610,6 +610,7 @@ var _instanceJs = require("./Instance.js");
             ...options
         };
         this.instances = [];
+        if (window.matchMedia('(prefers-reduced-motion)').matches) return;
         this.init();
     }
     init() {

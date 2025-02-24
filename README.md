@@ -59,7 +59,15 @@ items: [
 
 ## Misc
 
+### Performance
+
 Each instance observes its wrapper element's size and visibility. Instances that are currently not in view are not rendered for performance reasons.
+
+### Accessibility
+
+The script automatically detects user preferences for reduced motion based on the [`@media (prefers-reduced-motion)`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion). If this flag is detected, the script disables itself.
+
+Always provide meaningful fallback content for this case.
 
 ## API
 

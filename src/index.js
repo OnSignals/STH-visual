@@ -15,6 +15,8 @@ class STHVisual {
 
         this.instances = [];
 
+        if (window.matchMedia('(prefers-reduced-motion)').matches) return;
+
         this.init();
     }
 
