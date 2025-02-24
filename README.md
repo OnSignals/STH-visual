@@ -4,7 +4,7 @@
 
 ## Installation
 
-Just include the script and base CSS in your page. The script then auto-inits itself.
+Just include the script and base CSS before the closing `</body>` in your page. The script then auto-initiats.
 
 ```html
 <script src="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.legacy.min.js"></script>
@@ -13,7 +13,13 @@ Just include the script and base CSS in your page. The script then auto-inits it
 
 ## How it works
 
-The script searches for elements with a `data-STHVisual-role="instance"` attribute and reads the instance data from its `data-STHVisual-data` attribute. This data needs to be an escaped JSON-encoded object of the following format:
+The script searches for elements with a `data-STHVisual-role="instance"` attribute and reads the instance data from its `data-STHVisual-data` attribute:
+
+```html
+<article data-STHVisual-role="instance" data-STHVisual-data="{...data...}">...DOM content...</article>
+```
+
+The instance data is provided via an escaped JSON-encoded object of the following format:
 
 ```js
 {
@@ -40,18 +46,20 @@ items: [
 ]}
 ```
 
-### Data properties
+## Instance data
 
 -   `title`: `{string}` Optional title. For internal use only.
 -   `items`: `{array}` Array of items. Each instance can render one or multiple items.
-    -   `id`: `{string}`Unique id. Can be auto-generated.
+    -   `id`: `{string}` Unique id. Can be auto-generated.
     -   `video`: `{object}` video data
         -   `combined`: `{string}` URL of the video (combining color and depth map)
         -   `width`: `{number}` Video width.
         -   `height`: `{number}` Video height.
         -   `thumbnail`: `{string}` URL of a thumbnail image.
 
-Each instance observes its parent element's size and visibility. Instances that are currently not in view are not rendered for performance reasons.
+## Misc
+
+Each instance observes its wrapper element's size and visibility. Instances that are currently not in view are not rendered for performance reasons.
 
 ## API
 
@@ -59,7 +67,7 @@ To interact with the instances each instance provides an event-based API.
 
 ### Interact with the instance
 
-To instruct an instance to render of the provided items, dispatch a custom event named `STHVisual/api` on the instance's wrapper element. The event's event data must contain the action and optional item index.
+To instruct an instance to render one of the provided items, dispatch a custom event named `STHVisual/api` on the instance's wrapper element. The event's data object must contain the action and an optional item index.
 
 #### Show next item
 
@@ -97,22 +105,30 @@ instanceElement.dispatchEvent(customEvent);
 
 ### Emitted events
 
-Each instance emits custom events for the third-party scripts:
+Each instance emits custom events be consumed by third-party scripts:
 
 -   `STHVisual/initiated`
 -   `STHVisual/loaded`
 
-### Data attributes
+Subscribe to these events like:
 
-The script populates each instance's wrapper element with the following data attrubutes:
+```js
+instanceElement.addEventListener('STHVisual/loaded', () => {
+    console.log('this instance has loaded the first item...');
+});
+```
 
--   `data-STHVisual-isInitiated` : {boolean}
--   `data-STHVisual-isLoaded` : {boolean}
+## Data attributes
 
-This helps conditional styling e.g.:
+The script also populates each instance's wrapper element with the following data attrubutes:
+
+-   `data-STHVisual-isInitiated` : `{boolean}`
+-   `data-STHVisual-isLoaded` : `{boolean}`
+
+This helps with conditional styling e.g.:
 
 ```css
 .wrapper[data-STHVisual-isLoaded='true'] {
-    ...;
+    /** some styling... */
 }
 ```
