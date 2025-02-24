@@ -15,37 +15,40 @@ Just include the script and base CSS found in the `dist` folder before the closi
 
 ## How it works
 
-The script searches for elements with a `data-STHVisual-role="instance"` attribute and reads the instance data from its `data-STHVisual-data` attribute:
+The script searches for elements with a `data-STHVisual-role="instance"` attribute and appends a `<canvas />` element to it which to draw the visual on. This `<canvas />` is automatically resized to fit the wrapper element and is positioned absolutely with a low z-index. This enables you to render DOM content on top if it.
+
+The instance and item data is read from the wrapper element's `data-STHVisual-data` attribute:
 
 ```html
 <article data-STHVisual-role="instance" data-STHVisual-data="{...data...}">...DOM content...</article>
 ```
 
-The instance data is provided via an escaped JSON-encoded object of the following format:
+Data must be provided via an escaped JSON-encoded object of the following format:
 
 ```js
 {
-title:"Optional title of the instance",
-items: [
-{
-  "id":"item-1",
-  "video": {
-    "combined": "https://example.com/..../video_01.mp3",
-    "width": 1280,
-    "height": 720,
-    "thumbnail": "https://example.com/..../video_thumbnail_01.jpg"
-  }
-},
-{
-  "id":"item-2",
-  "video": {
-    "combined": "https://example.com/..../video_02.mp3",
-    "width": 720,
-    "height": 1280,
-    "thumbnail": "https://example.com/..../video_thumbnail_02.jpg"
-  }
+  title:"Optional title of the instance",
+  items: [
+    {
+      "id":"item-1",
+      "video": {
+        "combined": "https://example.com/..../video_01.mp3",
+        "width": 1280,
+        "height": 720,
+        "thumbnail": "https://example.com/..../video_thumbnail_01.jpg"
+      }
+    },
+    {
+      "id":"item-2",
+      "video": {
+        "combined": "https://example.com/..../video_02.mp3",
+        "width": 720,
+        "height": 1280,
+        "thumbnail": "https://example.com/..../video_thumbnail_02.jpg"
+      }
+    }
+  ]
 }
-]}
 ```
 
 ## Instance data
@@ -58,18 +61,6 @@ items: [
         -   `width`: `{number}` Video width.
         -   `height`: `{number}` Video height.
         -   `thumbnail`: `{string}` URL of a thumbnail image.
-
-## Misc
-
-### Performance
-
-Each instance observes its wrapper element's size and visibility. Instances that are currently not in view are not rendered for performance reasons.
-
-### Accessibility
-
-The script automatically detects user preferences for reduced motion based on the [`@media (prefers-reduced-motion)`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion). If this flag is detected, the script disables itself.
-
-Always provide meaningful fallback content for this case.
 
 ## API
 
@@ -142,3 +133,15 @@ This helps with conditional styling e.g.:
     /** some styling... */
 }
 ```
+
+## Misc
+
+### Performance
+
+Each instance observes its wrapper element's size and visibility. Instances that are currently not in view are not rendered for performance reasons.
+
+### Accessibility
+
+The script automatically detects user preferences for reduced motion based on the [`@media (prefers-reduced-motion)`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) media query. If this flag is detected, the script disables itself.
+
+Always provide meaningful fallback content for this case.
