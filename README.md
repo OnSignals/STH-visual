@@ -6,11 +6,11 @@ https://sth-visual.ff0000.dev
 
 ## Installation
 
-Just include the script and base CSS before the closing `</body>` in your page. The script then auto-initiats.
+Just include the script and base CSS found in the `dist` folder before the closing `</body>` of your page.
 
 ```html
-<script src="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.legacy.min.js"></script>
-<link href="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.css" rel="stylesheet" />
+<script src="dist/sth-visual.legacy.min.js"></script>
+<link href="dist/sth-visual.css" rel="stylesheet" />
 ```
 
 ## How it works
