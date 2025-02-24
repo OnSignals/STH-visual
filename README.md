@@ -1,5 +1,7 @@
 # STHVisual
 
+<video src="/preview.mp4" width="100%"></video>
+
 ## Demo
 
 https://sth-visual.ff0000.dev
