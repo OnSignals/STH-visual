@@ -17,12 +17,13 @@
 
         <script>
             /**
-             * Demo code to demonstrate how to trigger slider navigation on the
-             * STHVisual Module by calling a custom event on the instance element
+             * Demo code to demonstrate how to trigger navigation on the
+             * STHVisual instance by calling a custom event `STHVisual/api`
+             * on the instance element.
              *
-             * Event name is  `STHVisual/api`
-             * Data object needs to contain an action of `prev`, `next`, `go`
-             * `go`requires an additional index property in the data object
+             *
+             * Event data must contain an action of `prev`, `next`, `go`.
+             * `go` requires an additional index property in the data object.
              *
              */
             document.body.addEventListener('click', (event) => {
