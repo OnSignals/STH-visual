@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>STH Visual Demo</title><link href="/index.b2eefe44.css" rel="stylesheet"><script src="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.legacy.min.js"></script><link href="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.css" rel="stylesheet"></head><body> DEMO PUBLIC <section class="Posts"> <article class="Post" data-sthvisual-role="instance" data-sthvisual-data='{
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>STH Visual Demo</title><script src="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.legacy.min.js"></script><link href="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.css" rel="stylesheet"><link href="/index.9a0cafc0.css" rel="stylesheet"></head><body>  <header> <h1 class="title">STHVisual Demo</h1> <nav> <a href="https://github.com/OnSignals/STH-visual">Github repository</a> <a href>Source code of this page</a> </nav> <code> <pre>
+const customEvent = new CustomEvent("STHVisual/api", { detail: customEventData });
+instanceElement.dispatchEvent(customEvent); </pre> </code> </header> <main> <section class="Items"> <article class="Item" style="aspect-ratio:1;grid-area:1/1/span 1/span 2" data-sthvisual-role="instance" data-sthvisual-data='{
 "title":"Visual Instance A",
 "items": [
   {
@@ -13,17 +15,19 @@
   {
     "id":"item-1",
     "video": {
-      "combined": "https://player.vimeo.com/progressive_redirect/playback/1058558705/rendition/1080p/file.mp4?loc=external&log_user=0&signature=cae0020d77bdfd43a204a1578be86f2117093ef078033494cff113cb333842f4&user_id=101060412",
+      "combined": "https://player.vimeo.com/progressive_redirect/playback/1059644681/rendition/1080p/file.mp4?loc=external&log_user=0&signature=4222e110ac531af38a5ecfd1d4a0be02fffa4b17eae0d92656f6ee4485f06e11&user_id=101060412",
       "width": 1280,
-      "height": 720
+      "height": 720,
+      "thumbnail": "https://i.vimeocdn.com/video/1986034565-73f8e4898d816160696625661e40a2c7e78bac2a64f5fe306d1b4133a3e018fe-d_126x124"
     }
   },
   {
     "id":"item-2",
     "video": {
-      "combined": "https://player.vimeo.com/progressive_redirect/playback/1058558705/rendition/1080p/file.mp4?loc=external&log_user=0&signature=cae0020d77bdfd43a204a1578be86f2117093ef078033494cff113cb333842f4&user_id=101060412",
-      "width": 1280,
-      "height": 720
+      "combined": "https://player.vimeo.com/progressive_redirect/playback/1059644732/rendition/1080p/file.mp4?loc=external&log_user=0&signature=799386a75ee13fff208e0a032381317dd40ecb03d795d3e47d9d4392ecbb0fca&user_id=101060412",
+      "width": 720,
+      "height": 1280,
+      "thumbnail": "https://i.vimeocdn.com/video/1986034565-73f8e4898d816160696625661e40a2c7e78bac2a64f5fe306d1b4133a3e018fe-d_142x80?r=pad"
     }
   },
   {
@@ -31,15 +35,59 @@
     "video": {
       "combined": "https://player.vimeo.com/progressive_redirect/playback/1058558705/rendition/1080p/file.mp4?loc=external&log_user=0&signature=cae0020d77bdfd43a204a1578be86f2117093ef078033494cff113cb333842f4&user_id=101060412",
       "width": 1280,
-      "height": 720
+      "height": 720,
+      "thumbnail": "https://i.vimeocdn.com/video/1984738722-249d5524ab725c54b19ef36f818b18c5e41c699a44e9779887eb721942476237-d_126x142"
     }
   },
   {
     "id":"item-4",
     "video": {
-      "combined": "https://player.vimeo.com/progressive_redirect/playback/1058558705/rendition/1080p/file.mp4?loc=external&log_user=0&signature=cae0020d77bdfd43a204a1578be86f2117093ef078033494cff113cb333842f4&user_id=101060412",
+      "combined": "https://player.vimeo.com/progressive_redirect/playback/1059644681/rendition/1080p/file.mp4?loc=external&log_user=0&signature=4222e110ac531af38a5ecfd1d4a0be02fffa4b17eae0d92656f6ee4485f06e11&user_id=101060412",
       "width": 1280,
-      "height": 720
+      "height": 720,
+      "thumbnail": "https://i.vimeocdn.com/video/1986034565-73f8e4898d816160696625661e40a2c7e78bac2a64f5fe306d1b4133a3e018fe-d_126x124"
     }
+  },
+  {
+    "id":"item-5",
+    "video": {
+      "combined": "https://player.vimeo.com/progressive_redirect/playback/1059644732/rendition/1080p/file.mp4?loc=external&log_user=0&signature=799386a75ee13fff208e0a032381317dd40ecb03d795d3e47d9d4392ecbb0fca&user_id=101060412",
+      "width": 720,
+      "height": 1280,
+      "thumbnail": "https://i.vimeocdn.com/video/1986034565-73f8e4898d816160696625661e40a2c7e78bac2a64f5fe306d1b4133a3e018fe-d_142x80?r=pad"
+    }
+  }  
+]}'> <nav class="Item-ui"> <button data-demo-role="ui/prev">prev</button> <button data-demo-role="ui/next">next</button> <button data-demo-role="ui/go" data-demo-index="3">[3]</button> </nav> </article> <article class="Item" style="aspect-ratio:9/16;grid-area:1/3/span 1/span 1" data-sthvisual-role="instance" data-sthvisual-data='{
+"title":"Visual Instance B",
+"items": [
+{
+  "id":"item-1",
+  "video": {
+    "combined": "https://player.vimeo.com/progressive_redirect/playback/1059644681/rendition/1080p/file.mp4?loc=external&log_user=0&signature=4222e110ac531af38a5ecfd1d4a0be02fffa4b17eae0d92656f6ee4485f06e11&user_id=101060412",
+    "width": 1280,
+    "height": 720,
+    "thumbnail": "https://i.vimeocdn.com/video/1986034565-73f8e4898d816160696625661e40a2c7e78bac2a64f5fe306d1b4133a3e018fe-d_126x124"
   }
-]}'> <nav class="Post-ui"> <button data-demo-role="ui/prev">prev</button> <button data-demo-role="ui/next">next</button> <button data-demo-role="ui/go" data-demo-index="3">[3]</button> </nav> </article> </section> </body></html>
+},
+{
+  "id":"item-2",
+  "video": {
+    "combined": "https://player.vimeo.com/progressive_redirect/playback/1059644732/rendition/1080p/file.mp4?loc=external&log_user=0&signature=799386a75ee13fff208e0a032381317dd40ecb03d795d3e47d9d4392ecbb0fca&user_id=101060412",
+    "width": 720,
+    "height": 1280,
+    "thumbnail": "https://i.vimeocdn.com/video/1986034565-73f8e4898d816160696625661e40a2c7e78bac2a64f5fe306d1b4133a3e018fe-d_142x80?r=pad"
+  }
+}
+]}'> <nav class="Item-ui"> <button data-demo-role="ui/prev">prev</button> <button data-demo-role="ui/next">next</button> <button data-demo-role="ui/go" data-demo-index="3">[3]</button> </nav> </article> <article class="Item" style="aspect-ratio:16/9;grid-area:3/2/span 1/span 2;margin-top:50vh" data-sthvisual-role="instance" data-sthvisual-data='{
+"title":"Visual Instance B",
+"items": [
+{
+  "id":"item-2",
+  "video": {
+    "combined": "https://player.vimeo.com/progressive_redirect/playback/1059644732/rendition/1080p/file.mp4?loc=external&log_user=0&signature=799386a75ee13fff208e0a032381317dd40ecb03d795d3e47d9d4392ecbb0fca&user_id=101060412",
+    "width": 720,
+    "height": 1280,
+    "thumbnail": "https://i.vimeocdn.com/video/1986034565-73f8e4898d816160696625661e40a2c7e78bac2a64f5fe306d1b4133a3e018fe-d_142x80?r=pad"
+  }
+}
+]}'></article> </section> </main> <script>document.body.addEventListener("click",e=>{if(e.target.matches('[data-Demo-role^="ui"]')){e.preventDefault(),e.stopPropagation();let t=e.target.getAttribute("data-Demo-role").replace("ui/",""),a=e.target.closest('[data-STHVisual-role~="instance"]'),i=new CustomEvent("STHVisual/api",{detail:{action:t,index:parseInt(e.target.getAttribute("data-Demo-index"))}});a.dispatchEvent(i)}}),document.body.addEventListener("STHVisual/initiated",e=>{console.log("STHVisual/initiated",e)}),document.body.addEventListener("STHVisual/loaded",e=>{console.log("STHVisual/loaded",e)});</script> </body></html>
