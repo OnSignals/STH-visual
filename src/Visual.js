@@ -6,12 +6,13 @@ import { Item } from './Item';
 const MAX_DPR = 2;
 
 class Visual {
-    constructor(data, currentIndex) {
+    constructor(data, currentIndex, onLoaded = () => {}) {
         console.log('new Visual', data, currentIndex);
         if (!data) return;
 
         this.data = data;
         this.currentIndex = currentIndex;
+        this.onLoaded = onLoaded;
 
         this.items = [];
         this.pointerPosition = { x: 0, y: 0 };
@@ -53,7 +54,7 @@ class Visual {
         // Items
         if (this.data.items) {
             this.data.items.forEach(async (itemData) => {
-                const item = new Item(itemData);
+                const item = new Item(itemData, this.onLoaded);
                 item.build();
 
                 this.scene.add(item.getObject());

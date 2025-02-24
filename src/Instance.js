@@ -39,7 +39,9 @@ class Instance {
     build() {
         console.log('Instance.build()');
         // Visual
-        this.visual = new Visual(this.data, this.currentIndex);
+        this.visual = new Visual(this.data, this.currentIndex, () => {
+            this.onLoaded();
+        });
         if (this.visual?.monitor) this.wrapperElement.appendChild(this.visual?.monitor.ui.wrapper);
 
         // DOM
@@ -53,6 +55,9 @@ class Instance {
 
         // Events
         this.bindEvents();
+
+        // DOM Attributes
+        this.wrapperElement.setAttribute('data-STHVisual-isInitiated', 'true');
     }
 
     unbuild() {
@@ -71,6 +76,10 @@ class Instance {
 
         // Events
         this.unbindEvents();
+
+        // DOM Attributes
+        this.wrapperElement.removeAttribute('data-STHVisual-isInitiated');
+        this.wrapperElement.removeAttribute('data-STHVisual-isLoaded');
     }
 
     bindEvents() {
@@ -170,6 +179,17 @@ class Instance {
 
     onClick(event) {
         // this.currentIndex.set(wrap(this.currentIndex.get() + 1, this.data.items.length));
+    }
+
+    onLoaded() {
+        console.log('Instance.onLoaded()');
+
+        if (!this.wrapperElement) return;
+
+        this.wrapperElement.setAttribute('data-STHVisual-isLoaded', 'true');
+
+        const event = new CustomEvent('STHVisual/loaded');
+        this.wrapperElement.dispatchEvent(event);
     }
 
     onApi(event) {

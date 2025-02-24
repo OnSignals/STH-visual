@@ -668,7 +668,9 @@ const API_ACTIONS = [
     build() {
         console.log('Instance.build()');
         // Visual
-        this.visual = new (0, _visual.Visual)(this.data, this.currentIndex);
+        this.visual = new (0, _visual.Visual)(this.data, this.currentIndex, ()=>{
+            this.onLoaded();
+        });
         if (this.visual?.monitor) this.wrapperElement.appendChild(this.visual?.monitor.ui.wrapper);
         // DOM
         this.wrapperElement.appendChild(this.visual.getRendererElement());
@@ -678,6 +680,8 @@ const API_ACTIONS = [
         this.observeIntersection();
         // Events
         this.bindEvents();
+        // DOM Attributes
+        this.wrapperElement.setAttribute('data-STHVisual-isInitiated', 'true');
     }
     unbuild() {
         // Visual
@@ -691,6 +695,9 @@ const API_ACTIONS = [
         this.unobserveIntersection();
         // Events
         this.unbindEvents();
+        // DOM Attributes
+        this.wrapperElement.removeAttribute('data-STHVisual-isInitiated');
+        this.wrapperElement.removeAttribute('data-STHVisual-isLoaded');
     }
     bindEvents() {
         console.log('Instance.bindEvents()');
@@ -766,6 +773,13 @@ const API_ACTIONS = [
     }
     onClick(event) {
     // this.currentIndex.set(wrap(this.currentIndex.get() + 1, this.data.items.length));
+    }
+    onLoaded() {
+        console.log('Instance.onLoaded()');
+        if (!this.wrapperElement) return;
+        this.wrapperElement.setAttribute('data-STHVisual-isLoaded', 'true');
+        const event = new CustomEvent('STHVisual/loaded');
+        this.wrapperElement.dispatchEvent(event);
     }
     onApi(event) {
         const { action, index } = event?.detail;
@@ -1477,11 +1491,12 @@ var _threePerf = require("three-perf");
 var _item = require("./Item");
 const MAX_DPR = 2;
 class Visual {
-    constructor(data, currentIndex){
+    constructor(data, currentIndex, onLoaded = ()=>{}){
         console.log('new Visual', data, currentIndex);
         if (!data) return;
         this.data = data;
         this.currentIndex = currentIndex;
+        this.onLoaded = onLoaded;
         this.items = [];
         this.pointerPosition = {
             x: 0,
@@ -1516,7 +1531,7 @@ class Visual {
         this.camera.position.z = 10;
         // Items
         if (this.data.items) this.data.items.forEach(async (itemData)=>{
-            const item = new (0, _item.Item)(itemData);
+            const item = new (0, _item.Item)(itemData, this.onLoaded);
             item.build();
             this.scene.add(item.getObject());
             this.items.push(item);
@@ -49443,10 +49458,11 @@ const TRANSITION = {
     y: 16
 };
 class Item {
-    constructor(data){
+    constructor(data, onLoaded = ()=>{}){
         console.log('new Item', data);
         if (!data) return;
         this.data = data;
+        this.onLoaded = onLoaded;
         this.pointerPosition = {
             x: 0,
             y: 0
@@ -49539,6 +49555,7 @@ class Item {
             this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
             this.screen.material.uniforms.combinedTexture.value = this.previewTexture;
             this.screen.material.needsUpdate = true;
+            this.onLoaded();
         });
         // Video texture
         if (videoUrl) this.initTexture(videoUrl).then(({ video, texture } = {})=>{
@@ -49555,6 +49572,7 @@ class Item {
                 this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
                 this.screen.material.uniforms.combinedTexture.value = this.texture;
                 this.screen.material.needsUpdate = true;
+                this.onLoaded();
             }
         });
     }

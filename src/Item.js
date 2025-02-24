@@ -11,11 +11,12 @@ const TRANSITION = {
 };
 
 class Item {
-    constructor(data) {
+    constructor(data, onLoaded = () => {}) {
         console.log('new Item', data);
 
         if (!data) return;
         this.data = data;
+        this.onLoaded = onLoaded;
 
         this.pointerPosition = { x: 0, y: 0 };
 
@@ -138,6 +139,8 @@ class Item {
                 this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
                 this.screen.material.uniforms.combinedTexture.value = this.previewTexture;
                 this.screen.material.needsUpdate = true;
+
+                this.onLoaded();
             });
         }
 
@@ -163,6 +166,8 @@ class Item {
                     this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
                     this.screen.material.uniforms.combinedTexture.value = this.texture;
                     this.screen.material.needsUpdate = true;
+
+                    this.onLoaded();
                 }
             });
         }
