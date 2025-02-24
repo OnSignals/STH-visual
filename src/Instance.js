@@ -33,11 +33,17 @@ class Instance {
 
         this.currentIndex = new s(0);
 
+        this.is = {
+            initiated: false,
+            loaded: false,
+        };
+
         this.build();
     }
 
     build() {
         console.log('Instance.build()');
+
         // Visual
         this.visual = new Visual(this.data, this.currentIndex, () => {
             this.onLoaded();
@@ -56,8 +62,8 @@ class Instance {
         // Events
         this.bindEvents();
 
-        // DOM Attributes
-        this.wrapperElement.setAttribute('data-STHVisual-isInitiated', 'true');
+        // Callback
+        this.onInitiated();
     }
 
     unbuild() {
@@ -87,19 +93,16 @@ class Instance {
 
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
-        this.onClick = this.onClick.bind(this);
         this.onApi = this.onApi.bind(this);
 
         this.wrapperElement.addEventListener('mousemove', this.onMouseMove);
         this.wrapperElement.addEventListener('mouseleave', this.onMouseLeave);
-        this.wrapperElement.addEventListener('click', this.onClick);
         this.wrapperElement.addEventListener('STHVisual/api', this.onApi);
     }
 
     unbindEvents() {
         this.wrapperElement.removeEventListener('mousemove', this.onMouseMove);
         this.wrapperElement.removeEventListener('mousemove', this.onMouseLeave);
-        this.wrapperElement.removeEventListener('click', this.onClick);
         this.wrapperElement.removeEventListener('STHVisual/api', this.onApi);
     }
 
@@ -149,6 +152,14 @@ class Instance {
         this.currentIndex.set(wrap(index, this.data.items.length));
     }
 
+    dispatchEvent(eventName, data, bubbles = true) {
+        if (!eventName) return;
+        if (!this.wrapperElement) return;
+
+        const event = new CustomEvent(`STHVisual/${eventName}`, { detail: data, bubbles: bubbles });
+        this.wrapperElement.dispatchEvent(event);
+    }
+
     destroy() {
         this.unbuild();
     }
@@ -177,19 +188,28 @@ class Instance {
             });
     }
 
-    onClick(event) {
-        // this.currentIndex.set(wrap(this.currentIndex.get() + 1, this.data.items.length));
+    onInitiated() {
+        console.log('Instance.onInitiated()');
+
+        if (this.is.initiated) return;
+        if (!this.wrapperElement) return;
+
+        this.is.initiated = true;
+
+        this.wrapperElement.setAttribute('data-STHVisual-isInitiated', 'true');
+        this.dispatchEvent('initiated');
     }
 
     onLoaded() {
         console.log('Instance.onLoaded()');
 
+        if (this.is.loaded) return;
         if (!this.wrapperElement) return;
 
-        this.wrapperElement.setAttribute('data-STHVisual-isLoaded', 'true');
+        this.is.loaded = true;
 
-        const event = new CustomEvent('STHVisual/loaded');
-        this.wrapperElement.dispatchEvent(event);
+        this.wrapperElement.setAttribute('data-STHVisual-isLoaded', 'true');
+        this.dispatchEvent('loaded');
     }
 
     onApi(event) {

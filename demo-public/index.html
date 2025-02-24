@@ -18,5 +18,46 @@
         <main>
             <include src="demo-public/src/html/items.html"></include>
         </main>
+
+        <script>
+            /**
+             * Demo code to demonstrate how to trigger slider navigation on the
+             * STHVisual Module by calling a custom event on the instance element
+             *
+             * Event name is  `STHVisual/api`
+             * Data object needs to contain an action of `prev`, `next`, `go`
+             * `go`requires an additional index property in the data object
+             *
+             */
+            document.body.addEventListener('click', (event) => {
+                // next / prev buttons
+                if (event.target.matches('[data-Demo-role^="ui"]')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const action = event.target.getAttribute('data-Demo-role').replace('ui/', '');
+                    const instanceElement = event.target.closest('[data-STHVisual-role~="instance"]');
+                    const customEventData = {
+                        action: action,
+                        index: parseInt(event.target.getAttribute('data-Demo-index')),
+                    };
+
+                    const customEvent = new CustomEvent(`STHVisual/api`, { detail: customEventData });
+                    instanceElement.dispatchEvent(customEvent);
+                }
+            });
+
+            /**
+             * Demo code to demonstrate the dispatched events
+             * event.target holds the instance's wrapper element
+             */
+            document.body.addEventListener('STHVisual/initiated', (event) => {
+                console.log('STHVisual/initiated', event);
+            });
+
+            document.body.addEventListener('STHVisual/loaded', (event) => {
+                console.log('STHVisual/loaded', event);
+            });
+        </script>
     </body>
 </html>

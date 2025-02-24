@@ -19,7 +19,7 @@
 
         <script>
             /**
-             * Pseudo code to demonstrate how to trigger slider navigation on the
+             * Demo code to demonstrate how to trigger slider navigation on the
              * STHVisual Module by calling a custom event on the instance element
              *
              * Event name is  `STHVisual/api`
@@ -43,6 +43,18 @@
                     const customEvent = new CustomEvent(`STHVisual/api`, { detail: customEventData });
                     instanceElement.dispatchEvent(customEvent);
                 }
+            });
+
+            /**
+             * Demo code to demonstrate the dispatched events
+             * event.target holds the instance's wrapper element
+             */
+            document.body.addEventListener('STHVisual/initiated', (event) => {
+                console.log('STHVisual/initiated', event);
+            });
+
+            document.body.addEventListener('STHVisual/loaded', (event) => {
+                console.log('STHVisual/loaded', event);
             });
         </script>
     </body>

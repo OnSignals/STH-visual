@@ -5,8 +5,6 @@ import { Instance } from './Instance.js';
  *
  */
 
-console.log('index.js');
-
 class STHVisual {
     constructor(options = {}) {
         const defaults = {

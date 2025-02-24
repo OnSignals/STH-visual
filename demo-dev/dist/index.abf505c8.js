@@ -600,8 +600,7 @@ var _instanceJs = require("./Instance.js");
 /**
  * STH Visual
  *
- */ console.log('index.js');
-class STHVisual {
+ */ class STHVisual {
     constructor(options = {}){
         const defaults = {
             selectorInstance: '[data-STHVisual-role~="instance"]'
@@ -663,6 +662,10 @@ const API_ACTIONS = [
         this.intersectionObserver = null;
         this.visual = null;
         this.currentIndex = new (0, _s.s)(0);
+        this.is = {
+            initiated: false,
+            loaded: false
+        };
         this.build();
     }
     build() {
@@ -680,8 +683,8 @@ const API_ACTIONS = [
         this.observeIntersection();
         // Events
         this.bindEvents();
-        // DOM Attributes
-        this.wrapperElement.setAttribute('data-STHVisual-isInitiated', 'true');
+        // Callback
+        this.onInitiated();
     }
     unbuild() {
         // Visual
@@ -703,17 +706,14 @@ const API_ACTIONS = [
         console.log('Instance.bindEvents()');
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
-        this.onClick = this.onClick.bind(this);
         this.onApi = this.onApi.bind(this);
         this.wrapperElement.addEventListener('mousemove', this.onMouseMove);
         this.wrapperElement.addEventListener('mouseleave', this.onMouseLeave);
-        this.wrapperElement.addEventListener('click', this.onClick);
         this.wrapperElement.addEventListener('STHVisual/api', this.onApi);
     }
     unbindEvents() {
         this.wrapperElement.removeEventListener('mousemove', this.onMouseMove);
         this.wrapperElement.removeEventListener('mousemove', this.onMouseLeave);
-        this.wrapperElement.removeEventListener('click', this.onClick);
         this.wrapperElement.removeEventListener('STHVisual/api', this.onApi);
     }
     observeResize() {
@@ -750,6 +750,15 @@ const API_ACTIONS = [
         if (!this.data.items.length) return;
         this.currentIndex.set((0, _utils.wrap)(index, this.data.items.length));
     }
+    dispatchEvent(eventName, data, bubbles = true) {
+        if (!eventName) return;
+        if (!this.wrapperElement) return;
+        const event = new CustomEvent(`STHVisual/${eventName}`, {
+            detail: data,
+            bubbles: bubbles
+        });
+        this.wrapperElement.dispatchEvent(event);
+    }
     destroy() {
         this.unbuild();
     }
@@ -771,15 +780,21 @@ const API_ACTIONS = [
             y: 0
         });
     }
-    onClick(event) {
-    // this.currentIndex.set(wrap(this.currentIndex.get() + 1, this.data.items.length));
+    onInitiated() {
+        console.log('Instance.onInitiated()');
+        if (this.is.initiated) return;
+        if (!this.wrapperElement) return;
+        this.is.initiated = true;
+        this.wrapperElement.setAttribute('data-STHVisual-isInitiated', 'true');
+        this.dispatchEvent('initiated');
     }
     onLoaded() {
         console.log('Instance.onLoaded()');
+        if (this.is.loaded) return;
         if (!this.wrapperElement) return;
+        this.is.loaded = true;
         this.wrapperElement.setAttribute('data-STHVisual-isLoaded', 'true');
-        const event = new CustomEvent('STHVisual/loaded');
-        this.wrapperElement.dispatchEvent(event);
+        this.dispatchEvent('loaded');
     }
     onApi(event) {
         const { action, index } = event?.detail;
@@ -49454,8 +49469,15 @@ var _videoElement = require("./VideoElement");
 var _object3D = require("./utils/object3d");
 var _utils = require("@superstructure.net/utils");
 const PLANE_DIVISIONS = 128;
+const SCALE = {
+    portrait: 5,
+    landscape: 9
+};
 const TRANSITION = {
-    y: 16
+    x: 0,
+    y: 0,
+    z: -16,
+    opacity: 0
 };
 class Item {
     constructor(data, onLoaded = ()=>{}){
@@ -49472,6 +49494,7 @@ class Item {
         this.previewTexture = null;
         this.object = null;
         this.screen = null;
+        this.seed = Math.random();
         this.is = {
             active: false,
             // loading: false,
@@ -49492,16 +49515,19 @@ class Item {
         this.groups.object.visible = false;
         // - Transition
         this.groups.transition = new (0, _three.Group)();
+        this.groups.transition.position.set(TRANSITION.x, TRANSITION.y, TRANSITION.z);
         // -- InputRotation
         this.groups.inputRotation = new (0, _three.Group)();
         // --- AutoRotation
         this.groups.autoRotation = new (0, _three.Group)();
         // ---- Scale
         this.groups.scale = new (0, _three.Group)();
-        this.groups.scale.scale.set(12, 12, 12);
+        this.groups.scale.scale.set(videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape, videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape, videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape);
         // ----- Screen
         // const screenMaterial = new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide });
         const screenMaterial = (0, _customMaterial.CustomMaterial).clone();
+        console.log('isVertical', videoHeight > videoWidth);
+        screenMaterial.uniforms.isVertical.value = videoHeight > videoWidth;
         screenMaterial.uniforms.displacementScale.value = -0.5;
         this.screen = new (0, _three.Mesh)(new (0, _three.PlaneGeometry)(1, 1 / (videoWidth / videoHeight), PLANE_DIVISIONS, PLANE_DIVISIONS), screenMaterial);
         this.groups.object.add(this.groups.transition);
@@ -49552,10 +49578,7 @@ class Item {
             }
             this.previewTexture = texture;
             // Apply texture
-            this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
-            this.screen.material.uniforms.combinedTexture.value = this.previewTexture;
-            this.screen.material.needsUpdate = true;
-            this.onLoaded();
+            this.applyTexture(this.previewTexture);
         });
         // Video texture
         if (videoUrl) this.initTexture(videoUrl).then(({ video, texture } = {})=>{
@@ -49568,12 +49591,7 @@ class Item {
                 if (texture) texture.dispose();
             } else this.texture = texture;
             // Apply texture
-            if (this.screen && this.texture) {
-                this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
-                this.screen.material.uniforms.combinedTexture.value = this.texture;
-                this.screen.material.needsUpdate = true;
-                this.onLoaded();
-            }
+            this.applyTexture(this.texture);
         });
     }
     unload() {
@@ -49598,6 +49616,7 @@ class Item {
     //     this.transition.opacity = 0;
     // }
     show() {
+        console.log('Item.show()', this.data.id);
         this.is.active = true;
     }
     hide() {
@@ -49655,25 +49674,38 @@ class Item {
             texture
         };
     }
+    applyTexture(texture) {
+        if (!texture) return;
+        if (!this.screen) return;
+        this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
+        this.screen.material.uniforms.combinedTexture.value = texture;
+        this.screen.material.needsUpdate = true;
+        this.is.loaded = true;
+        this.onLoaded();
+    }
     onFrame(time, delta) {
         // Auto Rotation
         if (this.groups.autoRotation) {
             this.groups.autoRotation.rotation.x = Math.sin(time) * 0.2;
-            this.groups.autoRotation.rotation.y = Math.sin(time) * 0.2;
-            this.groups.autoRotation.rotation.z = Math.sin(time) * 0.2;
+            this.groups.autoRotation.rotation.y = Math.sin(time + this.seed * 10 + 12) * 0.2;
+            this.groups.autoRotation.rotation.z = Math.sin(time + this.seed * 10 + 3) * 0.2;
         }
         // Input Rotation
         if (this.groups.inputRotation) {
-            this.groups.inputRotation.rotation.y = (0, _utils.lerp)(this.groups.inputRotation.rotation.y, this.pointerPosition.x * 0.6, 0.005 * delta);
-            this.groups.inputRotation.rotation.x = (0, _utils.lerp)(this.groups.inputRotation.rotation.x, this.pointerPosition.y * -0.6, 0.005 * delta);
+            this.groups.inputRotation.rotation.y = (0, _utils.lerp)(this.groups.inputRotation.rotation.y, this.pointerPosition.x * 0.6, 0.005 / delta);
+            this.groups.inputRotation.rotation.x = (0, _utils.lerp)(this.groups.inputRotation.rotation.x, this.pointerPosition.y * -0.6, 0.005 / delta);
         }
         // Transition
         // - Position
-        if (this.groups.transition) this.groups.transition.position.y = (0, _utils.lerp)(this.groups.transition.position.y, this.is.active && this.is.loaded ? 0 : TRANSITION.y, 0.02);
+        if (this.groups.transition) {
+            this.groups.transition.position.x = (0, _utils.lerp)(this.groups.transition.position.x, this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.x, 0.06 / delta);
+            this.groups.transition.position.y = (0, _utils.lerp)(this.groups.transition.position.y, this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.y, 0.06 / delta);
+            this.groups.transition.position.z = (0, _utils.lerp)(this.groups.transition.position.z, this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.z, 0.06 / delta);
+        }
         // - Opacity
         if (this.screen.material) {
-            if (this.screen.material?.uniforms?.opacity?.value) this.screen.material.uniforms.opacity.value = (0, _utils.lerp)(this.screen.material.uniforms.opacity.value, this.is.active && this.is.loaded ? 1 : TRANSITION.opacity, 0.1);
-            else this.screen.material.opacity = (0, _utils.lerp)(this.screen.material.opacity, this.is.active && this.is.loaded ? 1 : TRANSITION.opacity, 0.1);
+            if (this.screen.material?.uniforms?.opacity) this.screen.material.uniforms.opacity.value = (0, _utils.lerp)(this.screen.material.uniforms.opacity.value, this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.opacity, 0.06 * delta);
+            else this.screen.material.opacity = (0, _utils.lerp)(this.screen.material.opacity, this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.opacity, 0.06 * delta);
         }
     }
     getObject() {
@@ -49695,29 +49727,44 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "CustomMaterial", ()=>CustomMaterial);
 var _three = require("three");
 const CustomMaterial = new (0, _three.ShaderMaterial)({
+    depthWrite: false,
+    transparent: true,
+    side: (0, _three.DoubleSide),
     uniforms: {
         time: {
             value: 1.0
         },
         opacity: {
-            value: 1.0
+            value: 0.0
         },
         displacementScale: {
             value: 1.0
         },
         combinedTexture: {
             value: new (0, _three.Texture)()
+        },
+        isVertical: {
+            value: 0
         }
     },
     vertexShader: /*glsl*/ `
 uniform float displacementScale;
 uniform sampler2D combinedTexture;    
+uniform int isVertical;    
 varying vec2 vUv;
 
 void main() {
     vUv = uv;
     
-    float displacement = texture2D(combinedTexture, vec2( vUv.x, vUv.y / 2.0) ).x;
+    float displacement;
+
+    if( isVertical == 1 ) {
+        displacement = texture2D(combinedTexture, vec2( vUv.x / 2.0, vUv.y) ).x;
+    } else {
+        displacement = texture2D(combinedTexture, vec2( vUv.x, vUv.y / 2.0) ).x;
+
+    }
+
     vec3 displacedPosition = vec3(position.x, position.y, position.z + displacement * displacementScale);
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
@@ -49727,10 +49774,17 @@ void main() {
 uniform float opacity;
 uniform float time;
 uniform sampler2D combinedTexture;
+uniform int isVertical;    
 varying vec2 vUv;
     
 void main() {
-    vec4 textureColor = texture2D(combinedTexture, vec2( vUv.x, 0.5 + vUv.y / 2.0));  
+    vec4 textureColor = vec4(0.0,0.0,0.0,0.0);
+
+    if( isVertical == 1 ) {
+        textureColor = texture2D(combinedTexture, vec2( vUv.x / 2.0, vUv.y));  
+    } else {
+        textureColor = texture2D(combinedTexture, vec2( vUv.x,  0.5 + vUv.y / 2.0));  
+    }
     
     gl_FragColor = vec4(textureColor.rgb, opacity );
 }

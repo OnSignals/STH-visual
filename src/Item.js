@@ -6,8 +6,16 @@ import { lerp } from '@superstructure.net/utils';
 
 const PLANE_DIVISIONS = 128;
 
+const SCALE = {
+    portrait: 5,
+    landscape: 9,
+};
+
 const TRANSITION = {
-    y: 16,
+    x: 0,
+    y: 0,
+    z: -16,
+    opacity: 0,
 };
 
 class Item {
@@ -25,6 +33,7 @@ class Item {
         this.previewTexture = null;
         this.object = null;
         this.screen = null;
+        this.seed = Math.random();
 
         this.is = {
             active: false, // is this item the current item and transitioned
@@ -52,6 +61,7 @@ class Item {
 
         // - Transition
         this.groups.transition = new Group();
+        this.groups.transition.position.set(TRANSITION.x, TRANSITION.y, TRANSITION.z);
 
         // -- InputRotation
         this.groups.inputRotation = new Group();
@@ -61,11 +71,17 @@ class Item {
 
         // ---- Scale
         this.groups.scale = new Group();
-        this.groups.scale.scale.set(12, 12, 12);
+        this.groups.scale.scale.set(
+            videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape,
+            videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape,
+            videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape
+        );
 
         // ----- Screen
         // const screenMaterial = new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide });
         const screenMaterial = CustomMaterial.clone();
+        console.log('isVertical', videoHeight > videoWidth);
+        screenMaterial.uniforms.isVertical.value = videoHeight > videoWidth;
         screenMaterial.uniforms.displacementScale.value = -0.5;
 
         this.screen = new Mesh(
@@ -136,11 +152,7 @@ class Item {
                 this.previewTexture = texture;
 
                 // Apply texture
-                this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
-                this.screen.material.uniforms.combinedTexture.value = this.previewTexture;
-                this.screen.material.needsUpdate = true;
-
-                this.onLoaded();
+                this.applyTexture(this.previewTexture);
             });
         }
 
@@ -162,13 +174,7 @@ class Item {
                 }
 
                 // Apply texture
-                if (this.screen && this.texture) {
-                    this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
-                    this.screen.material.uniforms.combinedTexture.value = this.texture;
-                    this.screen.material.needsUpdate = true;
-
-                    this.onLoaded();
-                }
+                this.applyTexture(this.texture);
             });
         }
     }
@@ -202,6 +208,8 @@ class Item {
     // }
 
     show() {
+        console.log('Item.show()', this.data.id);
+
         this.is.active = true;
     }
 
@@ -279,12 +287,25 @@ class Item {
         };
     }
 
+    applyTexture(texture) {
+        if (!texture) return;
+        if (!this.screen) return;
+
+        this.screen.material.uniforms.combinedTexture.value.dispose(); // this is important when overwriting unfiform texture
+        this.screen.material.uniforms.combinedTexture.value = texture;
+        this.screen.material.needsUpdate = true;
+
+        this.is.loaded = true;
+
+        this.onLoaded();
+    }
+
     onFrame(time, delta) {
         // Auto Rotation
         if (this.groups.autoRotation) {
             this.groups.autoRotation.rotation.x = Math.sin(time) * 0.2;
-            this.groups.autoRotation.rotation.y = Math.sin(time) * 0.2;
-            this.groups.autoRotation.rotation.z = Math.sin(time) * 0.2;
+            this.groups.autoRotation.rotation.y = Math.sin(time + this.seed * 10 + 12) * 0.2;
+            this.groups.autoRotation.rotation.z = Math.sin(time + this.seed * 10 + 3) * 0.2;
         }
 
         // Input Rotation
@@ -292,40 +313,51 @@ class Item {
             this.groups.inputRotation.rotation.y = lerp(
                 this.groups.inputRotation.rotation.y,
                 this.pointerPosition.x * 0.6,
-                0.005 * delta
+                0.005 / delta
             );
 
             this.groups.inputRotation.rotation.x = lerp(
                 this.groups.inputRotation.rotation.x,
                 this.pointerPosition.y * -0.6,
-                0.005 * delta
+                0.005 / delta
             );
         }
 
         // Transition
         // - Position
         if (this.groups.transition) {
+            this.groups.transition.position.x = lerp(
+                this.groups.transition.position.x,
+                this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.x,
+                0.06 / delta
+            );
+
             this.groups.transition.position.y = lerp(
                 this.groups.transition.position.y,
-                this.is.active && this.is.loaded ? 0 : TRANSITION.y,
-                0.02
+                this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.y,
+                0.06 / delta
+            );
+
+            this.groups.transition.position.z = lerp(
+                this.groups.transition.position.z,
+                this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.z,
+                0.06 / delta
             );
         }
 
         // - Opacity
         if (this.screen.material) {
-            if (this.screen.material?.uniforms?.opacity?.value) {
+            if (this.screen.material?.uniforms?.opacity) {
                 this.screen.material.uniforms.opacity.value = lerp(
                     this.screen.material.uniforms.opacity.value,
-                    this.is.active && this.is.loaded ? 1 : TRANSITION.opacity,
-
-                    0.1
+                    this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.opacity,
+                    0.06 * delta
                 );
             } else {
                 this.screen.material.opacity = lerp(
                     this.screen.material.opacity,
-                    this.is.active && this.is.loaded ? 1 : TRANSITION.opacity,
-                    0.1
+                    this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.opacity,
+                    0.06 * delta
                 );
             }
         }
