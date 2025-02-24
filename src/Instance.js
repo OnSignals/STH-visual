@@ -138,6 +138,9 @@ class Instance {
 
     unobserveIntersection() {
         if (!this.intersectionObserver) return;
+
+        this.intersectionObserver.disconnect();
+        this.intersectionObserver = null;
     }
 
     resize() {
