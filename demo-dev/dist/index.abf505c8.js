@@ -49523,6 +49523,7 @@ class Item {
         // ---- Scale
         this.groups.scale = new (0, _three.Group)();
         this.groups.scale.scale.set(videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape, videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape, videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape);
+        console.info('scale', this.groups.scale.x);
         // ----- Screen
         // const screenMaterial = new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide });
         const screenMaterial = (0, _customMaterial.CustomMaterial).clone();
