@@ -1,6 +1,6 @@
 {
     "name": "sth-visual",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "modern": "dist/sth-visual.modern.min.js",
     "legacy": "dist/sth-visual.legacy.min.js",
     "targets": {

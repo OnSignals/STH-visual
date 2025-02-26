@@ -1,9 +1,26 @@
 import { clamp } from '@superstructure.net/utils';
-import { ACESFilmicToneMapping, Clock, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
+import {
+    ACESFilmicToneMapping,
+    Clock,
+    ColorManagement,
+    PerspectiveCamera,
+    Scene,
+    SRGBColorSpace,
+    WebGLRenderer,
+} from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterimagePass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+
 import { ThreePerf } from 'three-perf';
 import { Item } from './Item';
 
 const MAX_DPR = 2;
+
+const USE_COMPOSER = false;
+
+const AFTERIMAGE_STRENGTH = 0.6; // based on 60fps
 
 class Visual {
     constructor(data, currentIndex, onLoaded = () => {}) {
@@ -41,7 +58,7 @@ class Visual {
             precision: 'highp',
         });
         this.renderer.outputColorSpace = SRGBColorSpace;
-        this.renderer.toneMapping = ACESFilmicToneMapping;
+        // this.renderer.toneMapping = ACESFilmicToneMapping;
         this.renderer.domElement.setAttribute('data-STHVisual-role', 'canvas');
 
         // Scene
@@ -60,6 +77,26 @@ class Visual {
                 this.scene.add(item.getObject());
                 this.items.push(item);
             });
+        }
+
+        // TODO:
+        // Postprocessing
+        if (USE_COMPOSER) {
+            this.composer = {};
+
+            this.composer.composer = new EffectComposer(this.renderer);
+
+            // Renderpass
+            this.composer.renderPass = new RenderPass(this.scene, this.camera);
+            this.composer.composer.addPass(this.composer.renderPass);
+
+            // AfterImage
+            this.composer.afterimagePass = new AfterimagePass();
+            this.composer.composer.addPass(this.composer.afterimagePass);
+
+            // OutputPass
+            this.composer.outputPass = new OutputPass();
+            // this.composer.composer.addPass(this.composer.outputPass);
         }
 
         // Stats
@@ -86,6 +123,12 @@ class Visual {
 
         // Stats
         if (this?.monitor) this.monitor.dispose();
+
+        // Composer
+        if (this?.composer?.composer) this.composer.composer.dispose();
+        if (this?.composer?.afterimagePass) this.composer.afterimagePass.dispose();
+        if (this?.composer?.renderPass) this.composer.renderPass.dispose();
+        if (this?.composer?.outputPass) this.composer.outputPass.dispose();
     }
 
     resize(dimensions) {
@@ -94,12 +137,16 @@ class Visual {
 
         console.log('Visual.resize()', dimensions);
 
+        const renderWidth = clamp(window.devicePixelRatio, 1, MAX_DPR) * dimensions.width;
+        const renderHeight = clamp(window.devicePixelRatio, 1, MAX_DPR) * dimensions.height;
+
         // WebGLRenderer
-        this.renderer.setSize(
-            clamp(window.devicePixelRatio, 1, MAX_DPR) * dimensions.width,
-            clamp(window.devicePixelRatio, 1, MAX_DPR) * dimensions.height,
-            false
-        );
+        this.renderer.setSize(renderWidth, renderHeight, false);
+
+        // Composer
+        if (this?.composer?.composer) {
+            this.composer.composer.setSize(renderWidth, renderWidth);
+        }
 
         // Camera
         this.camera.aspect = dimensions.width / dimensions.height;
@@ -135,7 +182,12 @@ class Visual {
 
         if (this?.monitor) this.monitor.begin();
 
-        this.renderer.render(this.scene, this.camera);
+        if (USE_COMPOSER && this?.composer?.composer) {
+            this.composer.afterimagePass.uniforms.damp.value = AFTERIMAGE_STRENGTH / deltaNormalized;
+            this.composer.composer.render();
+        } else {
+            this.renderer.render(this.scene, this.camera);
+        }
 
         if (this?.monitor) this.monitor.end();
     }
@@ -189,18 +241,5 @@ class Visual {
         });
     }
 }
-
-/**
- *   0   1   2   3   4
- *       x
- *  -1   0   1
- *   x
- *   0   1          -1
- *                   x
- *   1           -1  0
- *
- *
- * Math.abs( currentIndex - i ) < 1 || Math.abs( (currentIndex + items.length) - i ) < 1
- */
 
 export { Visual };

@@ -14,8 +14,22 @@ const SCALE = {
 const TRANSITION = {
     x: 0,
     y: 0,
-    z: -16,
+    z: 0,
+    scale: {
+        x: 3,
+        y: 3,
+        z: 3,
+    },
     opacity: 0,
+};
+
+const LERP_FACTOR = {
+    inputRotation: 0.005,
+    transition: {
+        position: 0.06,
+        scale: 0.06,
+        opacity: 0.06,
+    },
 };
 
 class Item {
@@ -315,35 +329,54 @@ class Item {
             this.groups.inputRotation.rotation.y = lerp(
                 this.groups.inputRotation.rotation.y,
                 this.pointerPosition.x * 0.6,
-                0.005 / delta
+                LERP_FACTOR.inputRotation / delta
             );
 
             this.groups.inputRotation.rotation.x = lerp(
                 this.groups.inputRotation.rotation.x,
                 this.pointerPosition.y * -0.6,
-                0.005 / delta
+                LERP_FACTOR.inputRotation / delta
             );
         }
 
         // Transition
-        // - Position
         if (this.groups.transition) {
+            // - Position
             this.groups.transition.position.x = lerp(
                 this.groups.transition.position.x,
                 this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.x,
-                0.06 / delta
+                LERP_FACTOR.transition.scale / delta
             );
 
             this.groups.transition.position.y = lerp(
                 this.groups.transition.position.y,
                 this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.y,
-                0.06 / delta
+                LERP_FACTOR.transition.scale / delta
             );
 
             this.groups.transition.position.z = lerp(
                 this.groups.transition.position.z,
                 this.is.active && (this.is.loaded || true) ? 0 : TRANSITION.z,
-                0.06 / delta
+                LERP_FACTOR.transition.scale / delta
+            );
+
+            // - scale
+            this.groups.transition.scale.set(
+                lerp(
+                    this.groups.transition.scale.x,
+                    this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.scale.x,
+                    LERP_FACTOR.transition.scale / delta
+                ),
+                lerp(
+                    this.groups.transition.scale.y,
+                    this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.scale.y,
+                    LERP_FACTOR.transition.scale / delta
+                ),
+                lerp(
+                    this.groups.transition.scale.z,
+                    this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.scale.z,
+                    LERP_FACTOR.transition.scale / delta
+                )
             );
         }
 
@@ -353,13 +386,13 @@ class Item {
                 this.screen.material.uniforms.opacity.value = lerp(
                     this.screen.material.uniforms.opacity.value,
                     this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.opacity,
-                    0.06 * delta
+                    LERP_FACTOR.transition.opacity / delta
                 );
             } else {
                 this.screen.material.opacity = lerp(
                     this.screen.material.opacity,
                     this.is.active && (this.is.loaded || true) ? 1 : TRANSITION.opacity,
-                    0.06 * delta
+                    LERP_FACTOR.transition.opacity / delta
                 );
             }
         }
