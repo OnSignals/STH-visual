@@ -68,6 +68,23 @@ Data must be provided via an escaped JSON-encoded object of the following format
 
 To interact with one or all instances the library provides an event-based API.
 
+```js
+// example code...
+const customEvent = new CustomEvent('STHVisual/{eventName}', {
+    detail: {
+        action: '{action}',
+    },
+});
+{target}.dispatchEvent(customEvent);
+
+// ...or short:
+{target}.dispatchEvent(new CustomEvent('STHVisual/{eventName}', {
+    detail: {
+        action: '{action}',
+    },
+}));
+```
+
 ### Global API
 
 In case you want to dynamically init or destroy all instances, you can call the API on `document`. This is useful when using fetch-based page transitions, lazy loading content, etc.
@@ -75,7 +92,7 @@ In case you want to dynamically init or destroy all instances, you can call the 
 #### Init instances
 
 ```js
-const customEvent = new CustomEvent(`STHVisual/api`, {
+const customEvent = new CustomEvent('STHVisual/api', {
     detail: {
         action: 'init',
     },
@@ -86,7 +103,7 @@ document.dispatchEvent(customEvent);
 #### Destroy all instances
 
 ```js
-const customEvent = new CustomEvent(`STHVisual/api`, {
+const customEvent = new CustomEvent('STHVisual/api', {
     detail: {
         action: 'destroy',
     },
@@ -101,7 +118,7 @@ To instruct an instance to render one of the provided items, dispatch a custom e
 #### Show next item
 
 ```js
-const customEvent = new CustomEvent(`STHVisual/api`, {
+const customEvent = new CustomEvent('STHVisual/api', {
     detail: {
         action: 'next',
     },
@@ -112,7 +129,7 @@ instanceElement.dispatchEvent(customEvent);
 #### Show previous item
 
 ```js
-const customEvent = new CustomEvent(`STHVisual/api`, {
+const customEvent = new CustomEvent('STHVisual/api', {
     detail: {
         action: 'prev',
     },
@@ -123,7 +140,7 @@ instanceElement.dispatchEvent(customEvent);
 #### Show specific item by index
 
 ```js
-const customEvent = new CustomEvent(`STHVisual/api`, {
+const customEvent = new CustomEvent('STHVisual/api', {
     detail: {
         action: 'go',
         index: 2,
@@ -135,7 +152,7 @@ instanceElement.dispatchEvent(customEvent);
 #### Destroy an instance
 
 ```js
-const customEvent = new CustomEvent(`STHVisual/api`, {
+const customEvent = new CustomEvent('STHVisual/api', {
     detail: {
         action: 'destroy',
     },
