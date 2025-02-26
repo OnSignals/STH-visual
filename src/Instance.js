@@ -16,13 +16,14 @@ class Instance {
     constructor(wrapperElement) {
         console.log('new Instance', wrapperElement);
 
-        if (!wrapperElement) return;
+        if (!wrapperElement) return false;
+        if (wrapperElement.getAttribute('data-STHVisual-isInitiated') == 'true') return false;
 
         this.wrapperElement = wrapperElement;
         this.data = this.wrapperElement.getAttribute('data-STHVisual-data')
             ? JSON.parse(this.wrapperElement.getAttribute('data-STHVisual-data'))
             : null;
-        if (!this.data) return;
+        if (!this.data) return false;
 
         this.dimensions = { width: 1, height: 1 };
 
@@ -232,6 +233,9 @@ class Instance {
 
             case 'go':
                 this.go(index);
+
+            case 'destroy':
+                this.destroy;
         }
     }
 }

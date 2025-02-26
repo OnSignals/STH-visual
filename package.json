@@ -1,6 +1,6 @@
 {
     "name": "sth-visual",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "modern": "dist/sth-visual.modern.min.js",
     "legacy": "dist/sth-visual.legacy.min.js",
     "targets": {
@@ -9,7 +9,7 @@
             "distDir": "dist",
             "outputFormat": "global",
             "engines": {
-                "browsers": "last 2 versions"
+                "browsers": "> 0.5%, last 2 versions, not dead"
             }
         },
         "legacy": {

@@ -597,6 +597,10 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 
 },{}],"8lqZg":[function(require,module,exports,__globalThis) {
 var _instanceJs = require("./Instance.js");
+const API_ACTIONS = [
+    'init',
+    'destroy'
+];
 /**
  * STH Visual
  *
@@ -612,6 +616,7 @@ var _instanceJs = require("./Instance.js");
         this.instances = [];
         if (window.matchMedia('(prefers-reduced-motion)').matches) return;
         this.init();
+        this.bindEvents();
     }
     init() {
         if (this.instances.length) this.destroy();
@@ -619,12 +624,33 @@ var _instanceJs = require("./Instance.js");
         if (!instanceElements?.length) return;
         instanceElements.forEach((instanceElement)=>{
             const instance = new (0, _instanceJs.Instance)(instanceElement);
-            this.instances.push(instance);
+            if (instance) this.instances.push(instance);
         });
     }
     destroy() {
         if (this.instances) this.instances.forEach((instance)=>instance.destroy());
         this.instances = [];
+    }
+    bindEvents() {
+        this.onApi = this.onApi.bind(this);
+        document.addEventListener('STHVisual/api', this.onApi);
+    }
+    // don't unbind global events...
+    unbindEvents() {
+        document.removeEventListener('STHVisual/api', this.onApi);
+    }
+    onApi(event) {
+        const { action, index } = event?.detail;
+        if (!action || !API_ACTIONS.includes(action)) return;
+        console.log('STHVisual.onApi()', action, index);
+        switch(action){
+            case 'init':
+                this.init();
+                break;
+            case 'destroy':
+                this.destroy();
+                break;
+        }
     }
 }
 window.STHVisual = new STHVisual({});
@@ -651,10 +677,11 @@ const API_ACTIONS = [
  */ class Instance {
     constructor(wrapperElement){
         console.log('new Instance', wrapperElement);
-        if (!wrapperElement) return;
+        if (!wrapperElement) return false;
+        if (wrapperElement.getAttribute('data-STHVisual-isInitiated') == 'true') return false;
         this.wrapperElement = wrapperElement;
         this.data = this.wrapperElement.getAttribute('data-STHVisual-data') ? JSON.parse(this.wrapperElement.getAttribute('data-STHVisual-data')) : null;
-        if (!this.data) return;
+        if (!this.data) return false;
         this.dimensions = {
             width: 1,
             height: 1
@@ -812,6 +839,8 @@ const API_ACTIONS = [
                 break;
             case 'go':
                 this.go(index);
+            case 'destroy':
+                this.destroy;
         }
     }
 }

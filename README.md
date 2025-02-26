@@ -66,7 +66,33 @@ Data must be provided via an escaped JSON-encoded object of the following format
 
 ## API
 
-To interact with the instances each instance provides an event-based API.
+To interact with one or all instances each instance provides an event-based API.
+
+### Global API
+
+In case you want to dynamically init or destroy all instances, you can call the API on `document`. This is useful when using fetch-based page transitions, lazy loading content, etc.
+
+#### Init instances
+
+```js
+const customEvent = new CustomEvent(`STHVisual/api`, {
+    detail: {
+        action: 'init',
+    },
+});
+document.dispatchEvent(customEvent);
+```
+
+#### Destroy all instances
+
+```js
+const customEvent = new CustomEvent(`STHVisual/api`, {
+    detail: {
+        action: 'destroy',
+    },
+});
+document.dispatchEvent(customEvent);
+```
 
 ### Interact with the instance
 
@@ -101,6 +127,17 @@ const customEvent = new CustomEvent(`STHVisual/api`, {
     detail: {
         action: 'go',
         index: 2,
+    },
+});
+instanceElement.dispatchEvent(customEvent);
+```
+
+#### Destroy an instance
+
+```js
+const customEvent = new CustomEvent(`STHVisual/api`, {
+    detail: {
+        action: 'destroy',
     },
 });
 instanceElement.dispatchEvent(customEvent);

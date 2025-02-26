@@ -1,10 +1,11 @@
 import { Instance } from './Instance.js';
 
+const API_ACTIONS = ['init', 'destroy'];
+
 /**
  * STH Visual
  *
  */
-
 class STHVisual {
     constructor(options = {}) {
         const defaults = {
@@ -18,6 +19,7 @@ class STHVisual {
         if (window.matchMedia('(prefers-reduced-motion)').matches) return;
 
         this.init();
+        this.bindEvents();
     }
 
     init() {
@@ -28,7 +30,7 @@ class STHVisual {
 
         instanceElements.forEach((instanceElement) => {
             const instance = new Instance(instanceElement);
-            this.instances.push(instance);
+            if (instance) this.instances.push(instance);
         });
     }
 
@@ -36,6 +38,34 @@ class STHVisual {
         if (this.instances) this.instances.forEach((instance) => instance.destroy());
 
         this.instances = [];
+    }
+
+    bindEvents() {
+        this.onApi = this.onApi.bind(this);
+
+        document.addEventListener('STHVisual/api', this.onApi);
+    }
+
+    // don't unbind global events...
+    unbindEvents() {
+        document.removeEventListener('STHVisual/api', this.onApi);
+    }
+
+    onApi(event) {
+        const { action, index } = event?.detail;
+        if (!action || !API_ACTIONS.includes(action)) return;
+
+        console.log('STHVisual.onApi()', action, index);
+
+        switch (action) {
+            case 'init':
+                this.init();
+                break;
+
+            case 'destroy':
+                this.destroy();
+                break;
+        }
     }
 }
 
