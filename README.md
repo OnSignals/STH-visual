@@ -66,7 +66,7 @@ Data must be provided via an escaped JSON-encoded object of the following format
 
 ## API
 
-To interact with one or all instances each instance provides an event-based API.
+To interact with one or all instances the library provides an event-based API.
 
 ### Global API
 
