@@ -602,7 +602,7 @@ const API_ACTIONS = [
     'destroy'
 ];
 /**
- * STH Visual
+ * STHVisual
  *
  */ class STHVisual {
     constructor(options = {}){
@@ -669,13 +669,16 @@ const API_ACTIONS = [
     'go'
 ];
 /**
+ * Instance
  *
- *
- * Handle:
- * + ResizeObserver
- * + IntersectionObserver
+ * Each instance controls a Visual and
+ * handles resize and visibility
  */ class Instance {
-    constructor(wrapperElement){
+    /**
+     * Create an instance.
+     *
+     * @param {HTMLElement} wrapperElement - The main element of this instance
+     */ constructor(wrapperElement){
         console.log('new Instance', wrapperElement);
         if (!wrapperElement) return false;
         if (wrapperElement.getAttribute('data-STHVisual-isInitiated') == 'true') return false;
@@ -731,7 +734,6 @@ const API_ACTIONS = [
         this.wrapperElement.removeAttribute('data-STHVisual-isLoaded');
     }
     bindEvents() {
-        console.log('Instance.bindEvents()');
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
         this.onApi = this.onApi.bind(this);
@@ -1530,10 +1532,20 @@ var _outputPassJs = require("three/examples/jsm/postprocessing/OutputPass.js");
 var _threePerf = require("three-perf");
 var _item = require("./Item");
 const MAX_DPR = 2;
-const USE_COMPOSER = false;
-const AFTERIMAGE_STRENGTH = 0.6; // based on 60fps
-class Visual {
-    constructor(data, currentIndex, onLoaded = ()=>{}){
+const USE_COMPOSER = true;
+const AFTERIMAGE_STRENGTH = 0.98; // based on 60fps
+/**
+ * Visual
+ *
+ * Creates a WebGL context and renders Items to it.
+ */ class Visual {
+    /**
+     * Create a visual.
+     *
+     * @param {object} data - instance data
+     * @param {s} currentIndex – state object of the current index
+     * @param {function} onLoaded – Callback called when the first Item is loaded
+     */ constructor(data, currentIndex, onLoaded = ()=>{}){
         console.log('new Visual', data, currentIndex);
         if (!data) return;
         this.data = data;
@@ -1578,7 +1590,6 @@ class Visual {
             this.scene.add(item.getObject());
             this.items.push(item);
         });
-        // TODO:
         // Postprocessing
         if (USE_COMPOSER) {
             this.composer = {};
@@ -1652,8 +1663,8 @@ class Visual {
         });
         if (this?.monitor) this.monitor.begin();
         if (USE_COMPOSER && this?.composer?.composer) {
-            this.composer.afterimagePass.uniforms.damp.value = AFTERIMAGE_STRENGTH / deltaNormalized;
-            this.composer.composer.render();
+            this.composer.afterimagePass.uniforms.damp.value = AFTERIMAGE_STRENGTH;
+            this.composer.composer.render(deltaNormalized);
         } else this.renderer.render(this.scene, this.camera);
         if (this?.monitor) this.monitor.end();
     }
@@ -50220,8 +50231,17 @@ const LERP_FACTOR = {
         opacity: 0.06
     }
 };
-class Item {
-    constructor(data, onLoaded = ()=>{}){
+/**
+ * Item
+ *
+ * Items rendered in Visual.
+ */ class Item {
+    /**
+     * Create an item.
+     *
+     * @param {object} data - item data
+     * @param {function} onLoaded – Callback called when the item is loaded
+     */ constructor(data, onLoaded = ()=>{}){
         console.log('new Item', data);
         if (!data) return;
         this.data = data;
@@ -50470,7 +50490,11 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "CustomMaterial", ()=>CustomMaterial);
 var _three = require("three");
-const CustomMaterial = new (0, _three.ShaderMaterial)({
+/**
+ * CustomMaterial
+ *
+ * Custom Three.ShaderMaterial.
+ */ const CustomMaterial = new (0, _three.ShaderMaterial)({
     depthWrite: false,
     transparent: true,
     side: (0, _three.DoubleSide),
@@ -50540,8 +50564,17 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "VideoElement", ()=>VideoElement);
 var _videos = require("./utils/videos");
-class VideoElement {
-    constructor(url, videoAttributes = {}){
+/**
+ * VideoElement
+ *
+ * Creates a <video> and handles loading and playback
+ */ class VideoElement {
+    /**
+     * Create an item.
+     *
+     * @param {string} url - video URL
+     * @param {object} videoAttributes – Attributes to be attached to the <video> element
+     */ constructor(url, videoAttributes = {}){
         console.log('new VideoElement()', url);
         if (!url) return;
         this.url = url;

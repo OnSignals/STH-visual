@@ -1,13 +1,5 @@
 import { clamp } from '@superstructure.net/utils';
-import {
-    ACESFilmicToneMapping,
-    Clock,
-    ColorManagement,
-    PerspectiveCamera,
-    Scene,
-    SRGBColorSpace,
-    WebGLRenderer,
-} from 'three';
+import { ACESFilmicToneMapping, Clock, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer } from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterimagePass.js';
@@ -18,9 +10,9 @@ import { Item } from './Item';
 
 const MAX_DPR = 2;
 
-const USE_COMPOSER = false;
+const USE_COMPOSER = true;
 
-const AFTERIMAGE_STRENGTH = 0.6; // based on 60fps
+const AFTERIMAGE_STRENGTH = 0.98; // based on 60fps
 
 /**
  * Visual
@@ -91,7 +83,6 @@ class Visual {
             });
         }
 
-        // TODO:
         // Postprocessing
         if (USE_COMPOSER) {
             this.composer = {};
@@ -195,8 +186,8 @@ class Visual {
         if (this?.monitor) this.monitor.begin();
 
         if (USE_COMPOSER && this?.composer?.composer) {
-            this.composer.afterimagePass.uniforms.damp.value = AFTERIMAGE_STRENGTH / deltaNormalized;
-            this.composer.composer.render();
+            this.composer.afterimagePass.uniforms.damp.value = AFTERIMAGE_STRENGTH;
+            this.composer.composer.render(deltaNormalized);
         } else {
             this.renderer.render(this.scene, this.camera);
         }
