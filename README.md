@@ -100,6 +100,9 @@ const customEvent = new CustomEvent('STHVisual/api', {
 document.dispatchEvent(customEvent);
 ```
 
+> [!WARNING]
+> Note: You don't need to call this when using traditional browser navigation and no fetch/AJAX-based page loading.
+
 #### Destroy all instances
 
 ```js
@@ -110,6 +113,9 @@ const customEvent = new CustomEvent('STHVisual/api', {
 });
 document.dispatchEvent(customEvent);
 ```
+
+> [!WARNING]
+> Note: You don't need to call this when using traditional browser navigation and no fetch/AJAX-based page loading.
 
 ### Interact with the instance
 
