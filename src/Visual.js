@@ -10,7 +10,7 @@ import { Item } from './Item';
 
 const MAX_DPR = 2;
 
-const USE_COMPOSER = true;
+const USE_COMPOSER = false;
 
 const AFTERIMAGE_STRENGTH = 0.98; // based on 60fps
 
