@@ -1,0 +1,100 @@
+header,
+main,
+footer {
+    padding: 2rem;
+
+    @media (max-width: 800px) {
+        padding: 1rem;
+    }
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0 0 2em;
+    line-height: 1.1;
+}
+
+h1 {
+    font-family: serif;
+    font-size: 4rem;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+
+    @media (max-width: 800px) {
+        font-size: 2.5rem;
+    }
+}
+
+h2 {
+    font-size: 3rem;
+}
+
+h3 {
+    font-size: 2rem;
+}
+
+p {
+    max-width: 54rem;
+    margin: 1rem 0;
+}
+
+a {
+    color: inherit;
+
+    text-decoration: underline;
+    text-decoration-color: rgba(0, 0, 0, 0.25);
+    text-underline-offset: 0.15em;
+    text-underline-thickness: 1px;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            text-decoration-color: rgba(0, 0, 0, 1);
+        }
+    }
+}
+
+button,
+input[type='button'],
+input[type='submit'],
+.button {
+    padding: 0.5em 0.8em 0.4em;
+
+    font: inherit;
+    font-size: 0.8rem;
+    line-height: 1;
+    color: var(--color--background);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+
+    background-color: var(--color--text);
+    border: none;
+    outline: none;
+    border-radius: 2em;
+    box-shadow: none;
+
+    cursor: pointer;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: var(--color--background);
+            background-color: var(--color--accent);
+        }
+    }
+}
+
+code {
+    display: block;
+    max-width: 54rem;
+    margin: 1rem 0;
+    padding: 0.5rem;
+
+    background-color: #eee;
+    border-radius: 0.5rem;
+
+    & pre {
+        margin: 0;
+    }
+}

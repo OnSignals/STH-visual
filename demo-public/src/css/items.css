@@ -6,6 +6,12 @@
     align-items: flex-start;
     width: 100%;
     gap: 2vw;
+
+    @media (max-width: 800px) {
+        grid-template-columns: 1fr;
+        grid-auto-rows: min-content;
+        gap: 50vw;
+    }
 }
 
 .Item {
@@ -20,6 +26,12 @@
     border-radius: 0.5rem;
 
     box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.4);
+
+    @media (max-width: 800px) {
+        grid-column: initial !important;
+        grid-row: initial !important;
+        margin: 0 !important;
+    }
 }
 
 .Item-ui {
@@ -28,9 +40,21 @@
     bottom: 0;
     z-index: 20;
 
+    display: flex;
+    gap: 0.5rem;
     margin: 0.5rem;
 
     & button {
         /* font-size: 0.5rem; */
+    }
+
+    @media (max-width: 800px) {
+        left: 0;
+
+        justify-content: center;
+
+        & button {
+            font-size: 1rem;
+        }
     }
 }
