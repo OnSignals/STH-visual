@@ -3,7 +3,7 @@ import { Instance } from './Instance.js';
 const API_ACTIONS = ['init', 'destroy'];
 
 /**
- * STH Visual
+ * STHVisual
  *
  */
 class STHVisual {

@@ -22,7 +22,19 @@ const USE_COMPOSER = false;
 
 const AFTERIMAGE_STRENGTH = 0.6; // based on 60fps
 
+/**
+ * Visual
+ *
+ * Creates a WebGL context and renders Items to it.
+ */
 class Visual {
+    /**
+     * Create a visual.
+     *
+     * @param {object} data - instance data
+     * @param {s} currentIndex – state object of the current index
+     * @param {function} onLoaded – Callback called when the first Item is loaded
+     */
     constructor(data, currentIndex, onLoaded = () => {}) {
         console.log('new Visual', data, currentIndex);
         if (!data) return;

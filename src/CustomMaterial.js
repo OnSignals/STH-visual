@@ -1,5 +1,10 @@
 import { DoubleSide, ShaderMaterial, Texture } from 'three';
 
+/**
+ * CustomMaterial
+ *
+ * Custom Three.ShaderMaterial.
+ */
 const CustomMaterial = new ShaderMaterial({
     depthWrite: false,
     transparent: true,

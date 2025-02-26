@@ -1,6 +1,17 @@
 import { resolveRedirectedUrl } from './utils/videos';
 
+/**
+ * VideoElement
+ *
+ * Creates a <video> and handles loading and playback
+ */
 class VideoElement {
+    /**
+     * Create an item.
+     *
+     * @param {string} url - video URL
+     * @param {object} videoAttributes – Attributes to be attached to the <video> element
+     */
     constructor(url, videoAttributes = {}) {
         console.log('new VideoElement()', url);
         if (!url) return;

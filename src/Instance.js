@@ -6,13 +6,17 @@ import { wrap } from '@superstructure.net/utils';
 const API_ACTIONS = ['prev', 'next', 'go'];
 
 /**
+ * Instance
  *
- *
- * Handle:
- * + ResizeObserver
- * + IntersectionObserver
+ * Each instance controls a Visual and
+ * handles resize and visibility
  */
 class Instance {
+    /**
+     * Create an instance.
+     *
+     * @param {HTMLElement} wrapperElement - The main element of this instance
+     */
     constructor(wrapperElement) {
         console.log('new Instance', wrapperElement);
 
@@ -90,8 +94,6 @@ class Instance {
     }
 
     bindEvents() {
-        console.log('Instance.bindEvents()');
-
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
         this.onApi = this.onApi.bind(this);

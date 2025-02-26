@@ -32,7 +32,18 @@ const LERP_FACTOR = {
     },
 };
 
+/**
+ * Item
+ *
+ * Items rendered in Visual.
+ */
 class Item {
+    /**
+     * Create an item.
+     *
+     * @param {object} data - item data
+     * @param {function} onLoaded – Callback called when the item is loaded
+     */
     constructor(data, onLoaded = () => {}) {
         console.log('new Item', data);
 
