@@ -743,7 +743,7 @@ const API_ACTIONS = [
     }
     unbindEvents() {
         this.wrapperElement.removeEventListener('mousemove', this.onMouseMove);
-        this.wrapperElement.removeEventListener('mousemove', this.onMouseLeave);
+        this.wrapperElement.removeEventListener('mouseleave', this.onMouseLeave);
         this.wrapperElement.removeEventListener('STHVisual/api', this.onApi);
     }
     observeResize() {
