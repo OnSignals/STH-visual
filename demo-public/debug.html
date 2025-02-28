@@ -60,5 +60,48 @@
         <!-- Include JS and CSS from repo, CDN etc... -->
         <script src="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.legacy.min.js?0.0.9"></script>
         <link href="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.css?0.0.9" rel="stylesheet" />
+
+        <script type="module">
+            import { Pane } from '/demo-public/src/js/tweakpane.min.js';
+
+            /**
+             * Debugging...
+             */
+            const PARAMS = {
+                displacement: -0.5,
+                z: 0,
+            };
+
+            const pane = new Pane();
+            pane.addBinding(PARAMS, 'displacement', {
+                min: -2,
+                max: 2,
+            }).on('change', (event) => {
+                console.log(event.value);
+
+                const target =
+                    window?.STHVisual?.instances?.[0]?.visual?.items?.[0]?.screen?.material?.uniforms
+                        ?.displacementScale;
+                if (target) target.value = event.value;
+            });
+
+            pane.addBinding(PARAMS, 'z', {
+                min: -20,
+                max: 20,
+            }).on('change', (event) => {
+                console.log(
+                    event.value,
+                    window?.STHVisual?.instances?.[0]?.visual?.items?.[0]?.groups?.object?.position?.z
+                );
+
+                window.STHVisual.instances[0].visual.items[0].groups.object.position.z = event.value;
+            });
+        </script>
+
+        <style>
+            .tp-dfwv {
+                position: fixed;
+            }
+        </style>
     </body>
 </html>
