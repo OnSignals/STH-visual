@@ -1532,7 +1532,7 @@ var _outputPassJs = require("three/examples/jsm/postprocessing/OutputPass.js");
 var _threePerf = require("three-perf");
 var _item = require("./Item");
 const MAX_DPR = 2;
-const USE_COMPOSER = true;
+const USE_COMPOSER = false;
 const AFTERIMAGE_STRENGTH = 0.98; // based on 60fps
 /**
  * Visual
@@ -50209,8 +50209,9 @@ var _object3D = require("./utils/object3d");
 var _utils = require("@superstructure.net/utils");
 const PLANE_DIVISIONS = 128;
 const SCALE = {
-    portrait: 5,
-    landscape: 9
+    portrait: 9,
+    square: 9,
+    landscape: 12
 };
 const TRANSITION = {
     x: 0,
@@ -50282,8 +50283,10 @@ const LERP_FACTOR = {
         // --- AutoRotation
         this.groups.autoRotation = new (0, _three.Group)();
         // ---- Scale
+        console.log('SCALE', videoHeight / videoWidth);
+        const scale = Math.abs(1 - videoHeight / videoWidth) < 0.1 ? SCALE.square : videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape;
         this.groups.scale = new (0, _three.Group)();
-        this.groups.scale.scale.set(videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape, videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape, videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape);
+        this.groups.scale.scale.set(scale, scale, scale);
         console.info('scale', this.groups.scale.x);
         // ----- Screen
         // const screenMaterial = new MeshBasicMaterial({ color: 0xff0000, side: DoubleSide });

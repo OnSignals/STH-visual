@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>STH Visual Demo</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <!-- This is just related to this demo -->
+        <link href="src/css/index.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- POSTHTML include. See referenced file for HTML markup -->
+        <include src="demo-public/src/html/header.html"></include>
+
+        <script>
+            /**
+             * Demo code to demonstrate how to trigger navigation on the
+             * STHVisual instance by calling a custom event `STHVisual/api`
+             * on the instance element.
+             *
+             *
+             * Event data must contain an action of `prev`, `next`, `go`.
+             * `go` requires an additional index property in the data object.
+             *
+             */
+            document.body.addEventListener('click', (event) => {
+                // next / prev buttons
+                if (event.target.matches('[data-Demo-role^="ui"]')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const action = event.target.getAttribute('data-Demo-role').replace('ui/', '');
+                    const instanceElement = event.target.closest('[data-STHVisual-role~="instance"]');
+                    const customEventData = {
+                        action: action,
+                        index: parseInt(event.target.getAttribute('data-Demo-index')),
+                    };
+
+                    const customEvent = new CustomEvent(`STHVisual/api`, { detail: customEventData });
+                    instanceElement.dispatchEvent(customEvent);
+                }
+            });
+
+            /**
+             * Demo code to demonstrate the dispatched events
+             * event.target holds the instance's wrapper element
+             */
+            document.body.addEventListener('STHVisual/initiated', (event) => {
+                console.log('STHVisual/initiated', event);
+            });
+
+            document.body.addEventListener('STHVisual/loaded', (event) => {
+                console.log('STHVisual/loaded', event);
+            });
+        </script>
+
+        <!-- Include JS and CSS from repo, CDN etc... -->
+        <script src="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.legacy.min.js?0.0.9"></script>
+        <link href="https://githubraw.com/OnSignals/STH-visual/main/dist/sth-visual.css?0.0.9" rel="stylesheet" />
+    </body>
+</html>

@@ -7,8 +7,9 @@ import { lerp } from '@superstructure.net/utils';
 const PLANE_DIVISIONS = 128;
 
 const SCALE = {
-    portrait: 5,
-    landscape: 9,
+    portrait: 9,
+    square: 9,
+    landscape: 12,
 };
 
 const TRANSITION = {
@@ -95,12 +96,15 @@ class Item {
         this.groups.autoRotation = new Group();
 
         // ---- Scale
+        console.log('SCALE', videoHeight / videoWidth);
+        const scale =
+            Math.abs(1 - videoHeight / videoWidth) < 0.1
+                ? SCALE.square
+                : videoHeight > videoWidth
+                ? SCALE.portrait
+                : SCALE.landscape;
         this.groups.scale = new Group();
-        this.groups.scale.scale.set(
-            videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape,
-            videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape,
-            videoHeight > videoWidth ? SCALE.portrait : SCALE.landscape
-        );
+        this.groups.scale.scale.set(scale, scale, scale);
 
         console.info('scale', this.groups.scale.x);
 

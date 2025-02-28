@@ -24,6 +24,10 @@
         "demo-public": {
             "source": "demo-public/index.html",
             "distDir": "demo-public/dist"
+        },
+        "demo-public-debug": {
+            "source": "demo-public/debug.html",
+            "distDir": "demo-public/dist"
         }
     },
     "scripts": {
