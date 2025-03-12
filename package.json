@@ -1,6 +1,6 @@
 {
     "name": "sth-visual",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "modern": "dist/sth-visual.modern.min.js",
     "legacy": "dist/sth-visual.legacy.min.js",
     "browserslist": "> 0.5%, last 2 versions, not dead",
