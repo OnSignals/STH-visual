@@ -81,22 +81,22 @@
             }).on('change', (event) => {
                 console.log(event.value);
 
-                const target =
-                    window?.STHVisual?.instances?.[0]?.visual?.items?.[0]?.screen?.material?.uniforms
-                        ?.displacementScale;
-                if (target) target.value = event.value;
+                window?.STHVisual?.instances?.forEach((instance) => {
+                    if (instance?.visual?.items?.[0]?.screen?.material?.uniforms?.displacementScale)
+                        instance.visual.items[0].screen.material.uniforms.displacementScale.value = event.value;
+                });
             });
 
             pane.addBinding(PARAMS, 'z', {
                 min: -20,
                 max: 20,
             }).on('change', (event) => {
-                console.log(
-                    event.value,
-                    window?.STHVisual?.instances?.[0]?.visual?.items?.[0]?.groups?.object?.position?.z
-                );
+                console.log(event.value);
 
-                window.STHVisual.instances[0].visual.items[0].groups.object.position.z = event.value;
+                window.STHVisual.instances.forEach((instance) => {
+                    if (instance?.visual?.items?.[0]?.screen?.material?.uniforms?.displacementScale)
+                        instance.visual.items[0].groups.object.position.z = event.value;
+                });
             });
         </script>
 
