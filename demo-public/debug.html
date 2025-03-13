@@ -72,6 +72,9 @@
             const PARAMS = {
                 displacement: -0.5,
                 z: 0,
+                rotationX: 0,
+                rotationY: 0,
+                rotationZ: 0,
             };
 
             const pane = new Pane();
@@ -94,8 +97,45 @@
                 console.log(event.value);
 
                 window.STHVisual.instances.forEach((instance) => {
-                    if (instance?.visual?.items?.[0]?.screen?.material?.uniforms?.displacementScale)
+                    if (instance?.visual?.items?.[0]?.groups.object.position.z)
                         instance.visual.items[0].groups.object.position.z = event.value;
+                });
+            });
+
+            // Rotation
+            pane.addBinding(PARAMS, 'rotationX', {
+                min: -Math.PI,
+                max: Math.PI,
+            }).on('change', (event) => {
+                console.log(event.value);
+
+                window.STHVisual.instances.forEach((instance) => {
+                    if (instance?.visual?.items?.[0]?.groups?.object)
+                        instance.visual.items[0].groups.object.rotation.x = event.value;
+                });
+            });
+
+            pane.addBinding(PARAMS, 'rotationY', {
+                min: -Math.PI,
+                max: Math.PI,
+            }).on('change', (event) => {
+                console.log(event.value);
+
+                window.STHVisual.instances.forEach((instance) => {
+                    if (instance?.visual?.items?.[0]?.groups?.object)
+                        instance.visual.items[0].groups.object.rotation.y = event.value;
+                });
+            });
+
+            pane.addBinding(PARAMS, 'rotationZ', {
+                min: -Math.PI,
+                max: Math.PI,
+            }).on('change', (event) => {
+                console.log(event.value);
+
+                window.STHVisual.instances.forEach((instance) => {
+                    if (instance?.visual?.items?.[0]?.groups?.object)
+                        instance.visual.items[0].groups.object.rotation.z = event.value;
                 });
             });
         </script>

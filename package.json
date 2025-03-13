@@ -31,7 +31,7 @@
         }
     },
     "scripts": {
-        "dev": "parcel demo-dev/index.html --dist-dir=demo-dev/dist",
+        "dev": "parcel demo-public/debug.html --dist-dir=demo-dev/dist",
         "build": "parcel build"
     },
     "devDependencies": {
