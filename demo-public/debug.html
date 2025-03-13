@@ -97,7 +97,7 @@
                 console.log(event.value);
 
                 window.STHVisual.instances.forEach((instance) => {
-                    if (instance?.visual?.items?.[0]?.groups.object.position.z)
+                    if (instance?.visual?.items?.[0]?.groups?.object)
                         instance.visual.items[0].groups.object.position.z = event.value;
                 });
             });
